@@ -1,0 +1,320 @@
+<!--
+=====================================================
+  SISTEMA DE INVENTARIO FÍSICO 2026
+  © Derechos reservados DASSAC
+  Prohibida su copia, modificación o distribución
+  sin autorización expresa del autor.
+
+  Programador: AnthonyCarranzaParedes
+=====================================================
+-->
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Inventario Físico 2026 - DASSAC</title>
+
+<style>
+:root{
+  --azul:#0b3c5d;
+  --azul-claro:#1d6fa5;
+  --naranja:#f28c28;
+  --gris:#f4f6f8;
+  --texto:#1f2933;
+}
+
+*{
+  box-sizing:border-box;
+  font-family:Segoe UI, Tahoma, sans-serif;
+  user-select:none; /* 🔐 Bloquea selección */
+}
+
+input, textarea{
+  user-select:text; /* permite escribir */
+}
+
+body{
+  margin:0;
+  padding:15px;
+  background:var(--gris);
+  color:var(--texto);
+}
+
+/* ===== HEADER ===== */
+.header{
+  background:white;
+  border-radius:16px;
+  padding:15px 20px;
+  display:flex;
+  align-items:center;
+  gap:15px;
+  box-shadow:0 4px 10px rgba(0,0,0,.08);
+  margin-bottom:20px;
+}
+
+.header img{
+  height:60px;
+  pointer-events:none; /* 🔐 No arrastrar logo */
+}
+
+/* ===== TABS ===== */
+.tabs{
+  display:flex;
+  background:white;
+  border-radius:12px;
+  overflow:hidden;
+  margin-bottom:15px;
+  box-shadow:0 2px 6px rgba(0,0,0,.06);
+}
+
+.tab{
+  flex:1;
+  padding:12px;
+  text-align:center;
+  background:#e9edf1;
+  cursor:pointer;
+  font-weight:500;
+}
+
+.tab.active{
+  background:white;
+  color:var(--azul);
+  border-bottom:3px solid var(--naranja);
+}
+
+/* ===== CARDS ===== */
+.card{
+  background:white;
+  border-radius:15px;
+  padding:15px;
+  margin-bottom:15px;
+  box-shadow:0 3px 8px rgba(0,0,0,.05);
+}
+
+.hidden{display:none}
+
+label{
+  font-weight:600;
+  margin-top:10px;
+  display:block;
+}
+
+input,button{
+  width:100%;
+  padding:12px;
+  margin-top:6px;
+  font-size:15px;
+  border-radius:8px;
+  border:1px solid #ccc;
+}
+
+button{
+  background:var(--azul);
+  color:white;
+  border:none;
+  margin-top:15px;
+}
+
+.items-list{
+  max-height:250px;
+  overflow-y:auto;
+  border:1px solid #ddd;
+  margin-top:5px;
+  border-radius:8px;
+}
+
+.item-option{
+  padding:8px;
+  border-bottom:1px solid #eee;
+  cursor:pointer;
+}
+
+.badge{
+  background:var(--naranja);
+  color:white;
+  padding:3px 8px;
+  border-radius:8px;
+  font-size:12px;
+  margin-left:5px;
+}
+
+.result{
+  background:#f8fafc;
+  padding:10px;
+  margin-top:10px;
+  border-left:5px solid var(--azul);
+  border-radius:8px;
+}
+
+/* ===== FOOTER ===== */
+.footer{
+  text-align:center;
+  font-size:12px;
+  color:#555;
+  margin-top:25px;
+}
+.footer strong{
+  color:var(--azul);
+}
+</style>
+</head>
+
+<body>
+
+<div class="header">
+  <img src="logo_dassac.png" alt="DASSAC Logo">
+  <h1>INVENTARIO FÍSICO 2026<br>
+    <small>Das Logistic Solutions S.A.C.</small>
+  </h1>
+</div>
+
+<div class="tabs">
+  <div class="tab active" onclick="mostrarTab('registrar',this)">Registrar</div>
+  <div class="tab" onclick="mostrarTab('registros',this)">
+    Mis Registros (<span id="contador">0</span>)
+  </div>
+</div>
+
+<div id="tab-registrar" class="card">
+  <label>Usuario</label>
+  <input id="usuario" value="INV001">
+
+  <label>Código del Item</label>
+  <input id="codigo" onkeyup="filtrar()">
+
+  <div id="lista" class="items-list hidden"></div>
+  <div id="info" class="result hidden"></div>
+
+  <label>Ubicación Real</label>
+  <input id="ubicacion">
+
+  <label>Cantidad Real</label>
+  <input id="cantidad" type="number" min="0">
+
+  <button onclick="guardar()">Guardar</button>
+</div>
+
+<div id="tab-registros" class="card hidden">
+  <button onclick="exportar()">Exportar CSV</button>
+  <button onclick="borrar()">Borrar</button>
+  <div id="listaRegistros"></div>
+</div>
+
+<div class="footer">
+  © Derechos reservados <strong>DASSAC</strong><br>
+  Programador: <strong>AnthonyCarranzaParedes</strong>
+</div>
+
+<script src="datos_items.js"></script>
+
+<script>
+/* 🔐 PROTECCIÓN DE DOMINIO */
+const DOMINIO_PERMITIDO = "github.io";
+if (!location.hostname.includes(DOMINIO_PERMITIDO)) {
+  document.body.innerHTML = "<h2>Acceso no autorizado</h2>";
+  throw new Error("Dominio no autorizado");
+}
+
+/* 🔐 BLOQUEOS */
+document.addEventListener("contextmenu", e => e.preventDefault());
+document.addEventListener("keydown", e => {
+  if (
+    e.key === "F12" ||
+    (e.ctrlKey && e.shiftKey && ["I","J","C"].includes(e.key)) ||
+    (e.ctrlKey && ["u","s"].includes(e.key))
+  ) {
+    e.preventDefault();
+  }
+});
+
+/* ===== TU CÓDIGO ORIGINAL ===== */
+let items=[]
+let registros=JSON.parse(localStorage.getItem("registros")||"[]")
+
+document.addEventListener("DOMContentLoaded",()=>{
+ if(!window.catalogoCompleto){
+   alert("Error: datos_items.js no cargó")
+   return
+ }
+ items=Object.entries(window.catalogoCompleto).map(([c,d])=>({
+   codigo:c,
+   descripcion:d.descripcion,
+   ubicacion:d.ubicacion,
+   saldo:d.saldo,
+   unidad:d.unidad
+ }))
+ actualizar()
+})
+
+function mostrarTab(tab,el){
+ document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"))
+ el.classList.add("active")
+ document.querySelectorAll("[id^='tab-']").forEach(t=>t.classList.add("hidden"))
+ document.getElementById("tab-"+tab).classList.remove("hidden")
+}
+
+function filtrar(){
+ const v=codigo.value.toLowerCase()
+ if(v.length<2){lista.classList.add("hidden");return}
+ const f=items.filter(i=>i.codigo.includes(v)||i.descripcion.toLowerCase().includes(v)).slice(0,10)
+ lista.innerHTML=f.map(i=>`
+  <div class="item-option" onclick="seleccionar('${i.codigo}')">
+    <b>${i.codigo}</b> - ${i.descripcion}
+  </div>`).join("")
+ lista.classList.remove("hidden")
+}
+
+function seleccionar(c){
+ codigo.value=c
+ lista.classList.add("hidden")
+ const i=items.find(x=>x.codigo===c)
+ info.innerHTML=`<b>${i.descripcion}</b>`
+ info.classList.remove("hidden")
+ ubicacion.value=i.ubicacion||""
+ cantidad.value=i.saldo??""
+}
+
+function guardar(){
+ if(!codigo.value||!cantidad.value)return alert("Completa los campos")
+ registros.push({
+  Usuario:usuario.value,
+  Código:codigo.value,
+  Ubicación_Real:ubicacion.value,
+  Cantidad_Real:cantidad.value,
+  Fecha:new Date().toISOString()
+ })
+ localStorage.setItem("registros",JSON.stringify(registros))
+ actualizar()
+ alert("Guardado")
+}
+
+function actualizar(){
+ contador.innerText=registros.length
+ listaRegistros.innerHTML=registros.map(r=>`
+  <div class="result">${r.Código} - ${r.Cantidad_Real}</div>`).join("")
+}
+
+function exportar(){
+ let csv="Usuario,Código,Ubicación_Real,Cantidad_Real,Fecha\n"
+ registros.forEach(r=>{
+  csv+=`${r.Usuario},${r.Código},${r.Ubicación_Real},${r.Cantidad_Real},${r.Fecha}\n`
+ })
+ const a=document.createElement("a")
+ a.href=URL.createObjectURL(new Blob([csv],{type:"text/csv"}))
+ a.download=`inventario_${usuario.value}.csv`
+ a.click()
+}
+
+function borrar(){
+ if(confirm("¿Borrar todo?")){
+  registros=[]
+  localStorage.removeItem("registros")
+  actualizar()
+ }
+}
+</script>
+
+</body>
+</html>

@@ -1,11 +1,11 @@
 <!--
 =====================================================
   SISTEMA DE INVENTARIO FÍSICO 2026
-  © Derechos reservados DASSAC
+  © Derechos reservados DAS Logistics Solutions S.A.C.
   Prohibida su copia, modificación o distribución
   sin autorización expresa del autor.
 
-  Programador: AnthonyCarranzaParedes
+  Programador: Anthony Carranza Paredes
 =====================================================
 -->
 
@@ -28,11 +28,11 @@
 *{
   box-sizing:border-box;
   font-family:Segoe UI, Tahoma, sans-serif;
-  user-select:none; /* 🔐 Bloquea selección */
+  user-select:none;
 }
 
 input, textarea{
-  user-select:text; /* permite escribir */
+  user-select:text;
 }
 
 body{
@@ -42,24 +42,22 @@ body{
   color:var(--texto);
 }
 
-/* ===== HEADER ===== */
+/* HEADER */
 .header{
   background:white;
   border-radius:16px;
-  padding:15px 20px;
-  display:flex;
-  align-items:center;
-  gap:15px;
+  padding:20px;
+  text-align:center;
   box-shadow:0 4px 10px rgba(0,0,0,.08);
   margin-bottom:20px;
 }
 
 .header img{
-  height:60px;
-  pointer-events:none; /* 🔐 No arrastrar logo */
+  height:70px;
+  pointer-events:none;
 }
 
-/* ===== TABS ===== */
+/* TABS */
 .tabs{
   display:flex;
   background:white;
@@ -84,7 +82,7 @@ body{
   border-bottom:3px solid var(--naranja);
 }
 
-/* ===== CARDS ===== */
+/* CARDS */
 .card{
   background:white;
   border-radius:15px;
@@ -101,13 +99,21 @@ label{
   display:block;
 }
 
-input,button{
+input, textarea, button{
   width:100%;
   padding:12px;
   margin-top:6px;
   font-size:15px;
   border-radius:8px;
   border:1px solid #ccc;
+}
+
+textarea{
+  resize:vertical;
+}
+
+input:required{
+  border-left:4px solid var(--naranja);
 }
 
 button{
@@ -131,13 +137,8 @@ button{
   cursor:pointer;
 }
 
-.badge{
-  background:var(--naranja);
-  color:white;
-  padding:3px 8px;
-  border-radius:8px;
-  font-size:12px;
-  margin-left:5px;
+.item-option:hover{
+  background:#f1f5f9;
 }
 
 .result{
@@ -148,12 +149,18 @@ button{
   border-radius:8px;
 }
 
-/* ===== FOOTER ===== */
+/* FOOTER */
 .footer{
   text-align:center;
   font-size:12px;
   color:#555;
-  margin-top:25px;
+  margin-top:40px;
+}
+.footer .titulo{
+  font-size:14px;
+  font-weight:600;
+  color:var(--azul);
+  margin-bottom:20px;
 }
 .footer strong{
   color:var(--azul);
@@ -165,9 +172,6 @@ button{
 
 <div class="header">
   <img src="logo_dassac.png" alt="DASSAC Logo">
-  <h1>INVENTARIO FÍSICO 2026<br>
-    <small>Das Logistic Solutions S.A.C.</small>
-  </h1>
 </div>
 
 <div class="tabs">
@@ -177,25 +181,30 @@ button{
   </div>
 </div>
 
+<!-- REGISTRAR -->
 <div id="tab-registrar" class="card">
-  <label>Usuario</label>
-  <input id="usuario" value="INV001">
+  <label>DNI *</label>
+  <input id="usuario" placeholder="Ingrese DNI" required>
 
-  <label>Código del Item</label>
-  <input id="codigo" onkeyup="filtrar()">
+  <label>Código del Item *</label>
+  <input id="codigo" onkeyup="filtrar()" required>
 
   <div id="lista" class="items-list hidden"></div>
   <div id="info" class="result hidden"></div>
 
-  <label>Ubicación Real</label>
-  <input id="ubicacion">
+  <label>Ubicación Real *</label>
+  <input id="ubicacion" required>
 
-  <label>Cantidad Real</label>
-  <input id="cantidad" type="number" min="0">
+  <label>Cantidad Real *</label>
+  <input id="cantidad" type="number" min="0" required>
+
+  <label>Observaciones</label>
+  <textarea id="observaciones" rows="3" placeholder="(Opcional)"></textarea>
 
   <button onclick="guardar()">Guardar</button>
 </div>
 
+<!-- REGISTROS -->
 <div id="tab-registros" class="card hidden">
   <button onclick="exportar()">Exportar CSV</button>
   <button onclick="borrar()">Borrar</button>
@@ -203,40 +212,23 @@ button{
 </div>
 
 <div class="footer">
-  © Derechos reservados <strong>DASSAC</strong><br>
-  Programador: <strong>AnthonyCarranzaParedes</strong>
+  <div class="titulo">Inventario físico 2026</div>
+  © Derechos reservados <strong>DAS Logistics Solutions S.A.C.</strong><br>
+  Programador: <strong>Anthony Carranza Paredes</strong>
 </div>
 
 <script src="datos_items.js"></script>
 
 <script>
-/* 🔐 PROTECCIÓN DE DOMINIO */
-const DOMINIO_PERMITIDO = "github.io";
-if (!location.hostname.includes(DOMINIO_PERMITIDO)) {
-  document.body.innerHTML = "<h2>Acceso no autorizado</h2>";
-  throw new Error("Dominio no autorizado");
-}
-
-/* 🔐 BLOQUEOS */
 document.addEventListener("contextmenu", e => e.preventDefault());
-document.addEventListener("keydown", e => {
-  if (
-    e.key === "F12" ||
-    (e.ctrlKey && e.shiftKey && ["I","J","C"].includes(e.key)) ||
-    (e.ctrlKey && ["u","s"].includes(e.key))
-  ) {
-    e.preventDefault();
-  }
-});
 
-/* ===== TU CÓDIGO ORIGINAL ===== */
-let items=[]
-let registros=JSON.parse(localStorage.getItem("registros")||"[]")
+let items=[];
+let registros=JSON.parse(localStorage.getItem("registros")||"[]");
 
 document.addEventListener("DOMContentLoaded",()=>{
  if(!window.catalogoCompleto){
-   alert("Error: datos_items.js no cargó")
-   return
+   alert("Error: datos_items.js no cargó");
+   return;
  }
  items=Object.entries(window.catalogoCompleto).map(([c,d])=>({
    codigo:c,
@@ -244,74 +236,95 @@ document.addEventListener("DOMContentLoaded",()=>{
    ubicacion:d.ubicacion,
    saldo:d.saldo,
    unidad:d.unidad
- }))
- actualizar()
-})
+ }));
+ actualizar();
+});
 
 function mostrarTab(tab,el){
- document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"))
- el.classList.add("active")
- document.querySelectorAll("[id^='tab-']").forEach(t=>t.classList.add("hidden"))
- document.getElementById("tab-"+tab).classList.remove("hidden")
+ document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"));
+ el.classList.add("active");
+ document.querySelectorAll("[id^='tab-']").forEach(t=>t.classList.add("hidden"));
+ document.getElementById("tab-"+tab).classList.remove("hidden");
 }
 
 function filtrar(){
- const v=codigo.value.toLowerCase()
- if(v.length<2){lista.classList.add("hidden");return}
- const f=items.filter(i=>i.codigo.includes(v)||i.descripcion.toLowerCase().includes(v)).slice(0,10)
+ const v=codigo.value.toLowerCase();
+ if(v.length<2){lista.classList.add("hidden");return;}
+ const f=items.filter(i=>i.codigo.includes(v)||i.descripcion.toLowerCase().includes(v)).slice(0,10);
  lista.innerHTML=f.map(i=>`
   <div class="item-option" onclick="seleccionar('${i.codigo}')">
     <b>${i.codigo}</b> - ${i.descripcion}
-  </div>`).join("")
- lista.classList.remove("hidden")
+  </div>`).join("");
+ lista.classList.remove("hidden");
 }
 
 function seleccionar(c){
- codigo.value=c
- lista.classList.add("hidden")
- const i=items.find(x=>x.codigo===c)
- info.innerHTML=`<b>${i.descripcion}</b>`
- info.classList.remove("hidden")
- ubicacion.value=i.ubicacion||""
- cantidad.value=i.saldo??""
+ codigo.value=c;
+ lista.classList.add("hidden");
+ const i=items.find(x=>x.codigo===c);
+ info.innerHTML=`<b>${i.descripcion}</b>`;
+ info.classList.remove("hidden");
+
+ // 🔹 AUTORRELLENO CORRECTO
+ ubicacion.value = i.ubicacion || "";
+ cantidad.value  = (i.saldo !== undefined && i.saldo !== null) ? i.saldo : "";
 }
 
 function guardar(){
- if(!codigo.value||!cantidad.value)return alert("Completa los campos")
+ if(!usuario.checkValidity() ||
+    !codigo.checkValidity() ||
+    !ubicacion.checkValidity() ||
+    !cantidad.checkValidity()){
+   alert("Debe completar todos los campos obligatorios (*)");
+   return;
+ }
+
  registros.push({
-  Usuario:usuario.value,
+  DNI:usuario.value,
   Código:codigo.value,
   Ubicación_Real:ubicacion.value,
   Cantidad_Real:cantidad.value,
+  Observaciones:observaciones.value,
   Fecha:new Date().toISOString()
- })
- localStorage.setItem("registros",JSON.stringify(registros))
- actualizar()
- alert("Guardado")
+ });
+
+ localStorage.setItem("registros",JSON.stringify(registros));
+
+ codigo.value="";
+ ubicacion.value="";
+ cantidad.value="";
+ observaciones.value="";
+ info.classList.add("hidden");
+
+ actualizar();
+ alert("Registro guardado correctamente");
 }
 
 function actualizar(){
- contador.innerText=registros.length
+ contador.innerText=registros.length;
  listaRegistros.innerHTML=registros.map(r=>`
-  <div class="result">${r.Código} - ${r.Cantidad_Real}</div>`).join("")
+  <div class="result">
+    ${r.Código} - ${r.Cantidad_Real}<br>
+    <small>${r.Observaciones || ""}</small>
+  </div>`).join("");
 }
 
 function exportar(){
- let csv="Usuario,Código,Ubicación_Real,Cantidad_Real,Fecha\n"
+ let csv="DNI,Código,Ubicación_Real,Cantidad_Real,Observaciones,Fecha\n";
  registros.forEach(r=>{
-  csv+=`${r.Usuario},${r.Código},${r.Ubicación_Real},${r.Cantidad_Real},${r.Fecha}\n`
- })
- const a=document.createElement("a")
- a.href=URL.createObjectURL(new Blob([csv],{type:"text/csv"}))
- a.download=`inventario_${usuario.value}.csv`
- a.click()
+  csv+=`${r.DNI},${r.Código},${r.Ubicación_Real},${r.Cantidad_Real},"${r.Observaciones}",${r.Fecha}\n`;
+ });
+ const a=document.createElement("a");
+ a.href=URL.createObjectURL(new Blob([csv],{type:"text/csv"}));
+ a.download="inventario_2026.csv";
+ a.click();
 }
 
 function borrar(){
- if(confirm("¿Borrar todo?")){
-  registros=[]
-  localStorage.removeItem("registros")
-  actualizar()
+ if(confirm("¿Borrar todos los registros?")){
+  registros=[];
+  localStorage.removeItem("registros");
+  actualizar();
  }
 }
 </script>

@@ -14,32 +14,24 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Inventario Físico 2026 - DASSAC</title>
+<title>Inventario Físico 2026</title>
 
 <style>
 :root{
   --azul:#0b3c5d;
-  --azul-claro:#1d6fa5;
   --naranja:#f28c28;
   --gris:#f4f6f8;
-  --texto:#1f2933;
 }
 
 *{
   box-sizing:border-box;
   font-family:Segoe UI, Tahoma, sans-serif;
-  user-select:none;
-}
-
-input, textarea{
-  user-select:text;
 }
 
 body{
   margin:0;
   padding:15px;
   background:var(--gris);
-  color:var(--texto);
 }
 
 /* HEADER */
@@ -48,14 +40,11 @@ body{
   border-radius:16px;
   padding:20px;
   text-align:center;
+  margin-bottom:15px;
   box-shadow:0 4px 10px rgba(0,0,0,.08);
-  margin-bottom:20px;
 }
 
-.header img{
-  height:70px;
-  pointer-events:none;
-}
+.header img{height:70px}
 
 /* TABS */
 .tabs{
@@ -64,29 +53,27 @@ body{
   border-radius:12px;
   overflow:hidden;
   margin-bottom:15px;
-  box-shadow:0 2px 6px rgba(0,0,0,.06);
 }
 
 .tab{
   flex:1;
   padding:12px;
   text-align:center;
-  background:#e9edf1;
   cursor:pointer;
-  font-weight:500;
+  background:#e9edf1;
+  font-weight:600;
 }
 
 .tab.active{
   background:white;
-  color:var(--azul);
   border-bottom:3px solid var(--naranja);
 }
 
-/* CARDS */
+/* CARD */
 .card{
   background:white;
   border-radius:15px;
-  padding:15px;
+  padding:20px;
   margin-bottom:15px;
   box-shadow:0 3px 8px rgba(0,0,0,.05);
 }
@@ -103,17 +90,8 @@ input, textarea, button{
   width:100%;
   padding:12px;
   margin-top:6px;
-  font-size:15px;
   border-radius:8px;
   border:1px solid #ccc;
-}
-
-textarea{
-  resize:vertical;
-}
-
-input:required{
-  border-left:4px solid var(--naranja);
 }
 
 button{
@@ -123,11 +101,13 @@ button{
   margin-top:15px;
 }
 
+button:hover{background:#124d73}
+
+/* ITEMS */
 .items-list{
-  max-height:250px;
+  max-height:220px;
   overflow-y:auto;
   border:1px solid #ddd;
-  margin-top:5px;
   border-radius:8px;
 }
 
@@ -137,9 +117,7 @@ button{
   cursor:pointer;
 }
 
-.item-option:hover{
-  background:#f1f5f9;
-}
+.item-option:hover{background:#f1f5f9}
 
 .result{
   background:#f8fafc;
@@ -153,17 +131,12 @@ button{
 .footer{
   text-align:center;
   font-size:12px;
-  color:#555;
   margin-top:40px;
 }
+
 .footer .titulo{
-  font-size:14px;
   font-weight:600;
-  color:var(--azul);
   margin-bottom:20px;
-}
-.footer strong{
-  color:var(--azul);
 }
 </style>
 </head>
@@ -171,44 +144,56 @@ button{
 <body>
 
 <div class="header">
-  <img src="logo_dassac.png" alt="DASSAC Logo">
+  <img src="logo_dassac.png">
 </div>
 
-<div class="tabs">
-  <div class="tab active" onclick="mostrarTab('registrar',this)">Registrar</div>
-  <div class="tab" onclick="mostrarTab('registros',this)">
-    Mis Registros (<span id="contador">0</span>)
-  </div>
-</div>
-
-<!-- REGISTRAR -->
-<div id="tab-registrar" class="card">
+<!-- PANTALLA DNI -->
+<div id="pantalla-dni" class="card">
   <label>DNI *</label>
-  <input id="usuario" placeholder="Ingrese DNI" required>
-
-  <label>Código del Item *</label>
-  <input id="codigo" onkeyup="filtrar()" required>
-
-  <div id="lista" class="items-list hidden"></div>
-  <div id="info" class="result hidden"></div>
-
-  <label>Ubicación Real *</label>
-  <input id="ubicacion" required>
-
-  <label>Cantidad Real *</label>
-  <input id="cantidad" type="number" min="0" required>
-
-  <label>Observaciones</label>
-  <textarea id="observaciones" rows="3" placeholder="(Opcional)"></textarea>
-
-  <button onclick="guardar()">Guardar</button>
+  <input id="dni" placeholder="Ingrese DNI">
+  <button onclick="ingresar()">Ingresar</button>
 </div>
 
-<!-- REGISTROS -->
-<div id="tab-registros" class="card hidden">
-  <button onclick="exportar()">Exportar CSV</button>
-  <button onclick="borrar()">Borrar</button>
-  <div id="listaRegistros"></div>
+<!-- SISTEMA -->
+<div id="sistema" class="hidden">
+
+  <div class="card">
+    <strong>DNI:</strong> <span id="dniMostrado"></span>
+  </div>
+
+  <div class="tabs">
+    <div class="tab active" onclick="mostrarTab('registrar',this)">Registrar</div>
+    <div class="tab" onclick="mostrarTab('registros',this)">
+      Mis registros (<span id="contador">0</span>)
+    </div>
+  </div>
+
+  <!-- REGISTRAR -->
+  <div id="tab-registrar" class="card">
+    <label>Código del Item *</label>
+    <input id="codigo" onkeyup="filtrar()">
+    <div id="lista" class="items-list hidden"></div>
+    <div id="info" class="result hidden"></div>
+
+    <label>Ubicación Real *</label>
+    <input id="ubicacion">
+
+    <label>Cantidad Real *</label>
+    <input id="cantidad" type="number" min="0">
+
+    <label>Observaciones</label>
+    <textarea id="observaciones" rows="3"></textarea>
+
+    <button onclick="guardar()">Guardar</button>
+  </div>
+
+  <!-- REGISTROS -->
+  <div id="tab-registros" class="card hidden">
+    <button onclick="exportar()">📥 Exportar CSV</button>
+    <button onclick="borrar()">🗑️ Borrar</button>
+    <div id="listaRegistros"></div>
+  </div>
+
 </div>
 
 <div class="footer">
@@ -220,114 +205,112 @@ button{
 <script src="datos_items.js"></script>
 
 <script>
-document.addEventListener("contextmenu", e => e.preventDefault());
-
 let items=[];
-let registros=JSON.parse(localStorage.getItem("registros")||"[]");
+let registros=[];
+let DNI_ACTUAL="";
+
+function ingresar(){
+  const dniInput=document.getElementById("dni");
+  if(!dniInput.value.trim()){
+    alert("Ingrese DNI");
+    return;
+  }
+  DNI_ACTUAL=dniInput.value.trim();
+  dniMostrado.innerText=DNI_ACTUAL;
+  document.getElementById("pantalla-dni").classList.add("hidden");
+  document.getElementById("sistema").classList.remove("hidden");
+}
 
 document.addEventListener("DOMContentLoaded",()=>{
- if(!window.catalogoCompleto){
-   alert("Error: datos_items.js no cargó");
-   return;
- }
- items=Object.entries(window.catalogoCompleto).map(([c,d])=>({
-   codigo:c,
-   descripcion:d.descripcion,
-   ubicacion:d.ubicacion,
-   saldo:d.saldo,
-   unidad:d.unidad
- }));
- actualizar();
+  if(!window.catalogoCompleto){
+    alert("Error: datos_items.js no cargó");
+    return;
+  }
+  items=Object.entries(window.catalogoCompleto).map(([c,d])=>({
+    codigo:c,
+    descripcion:d.descripcion,
+    ubicacion:d.ubicacion,
+    saldo:d.saldo
+  }));
 });
 
 function mostrarTab(tab,el){
- document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"));
- el.classList.add("active");
- document.querySelectorAll("[id^='tab-']").forEach(t=>t.classList.add("hidden"));
- document.getElementById("tab-"+tab).classList.remove("hidden");
+  document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"));
+  el.classList.add("active");
+  document.querySelectorAll("[id^='tab-']").forEach(t=>t.classList.add("hidden"));
+  document.getElementById("tab-"+tab).classList.remove("hidden");
 }
 
 function filtrar(){
- const v=codigo.value.toLowerCase();
- if(v.length<2){lista.classList.add("hidden");return;}
- const f=items.filter(i=>i.codigo.includes(v)||i.descripcion.toLowerCase().includes(v)).slice(0,10);
- lista.innerHTML=f.map(i=>`
-  <div class="item-option" onclick="seleccionar('${i.codigo}')">
-    <b>${i.codigo}</b> - ${i.descripcion}
-  </div>`).join("");
- lista.classList.remove("hidden");
+  const v=codigo.value.toLowerCase();
+  if(v.length<2){lista.classList.add("hidden");return;}
+  const f=items.filter(i=>i.codigo.includes(v)||i.descripcion.toLowerCase().includes(v)).slice(0,10);
+  lista.innerHTML=f.map(i=>`
+    <div class="item-option" onclick="seleccionar('${i.codigo}')">
+      <b>${i.codigo}</b> - ${i.descripcion}
+    </div>`).join("");
+  lista.classList.remove("hidden");
 }
 
 function seleccionar(c){
- codigo.value=c;
- lista.classList.add("hidden");
- const i=items.find(x=>x.codigo===c);
- info.innerHTML=`<b>${i.descripcion}</b>`;
- info.classList.remove("hidden");
-
- // 🔹 AUTORRELLENO CORRECTO
- ubicacion.value = i.ubicacion || "";
- cantidad.value  = (i.saldo !== undefined && i.saldo !== null) ? i.saldo : "";
+  codigo.value=c;
+  lista.classList.add("hidden");
+  const i=items.find(x=>x.codigo===c);
+  info.innerHTML=`<b>${i.descripcion}</b>`;
+  info.classList.remove("hidden");
+  ubicacion.value=i.ubicacion||"";
+  cantidad.value=i.saldo ?? "";
 }
 
 function guardar(){
- if(!usuario.checkValidity() ||
-    !codigo.checkValidity() ||
-    !ubicacion.checkValidity() ||
-    !cantidad.checkValidity()){
-   alert("Debe completar todos los campos obligatorios (*)");
-   return;
- }
-
- registros.push({
-  DNI:usuario.value,
-  Código:codigo.value,
-  Ubicación_Real:ubicacion.value,
-  Cantidad_Real:cantidad.value,
-  Observaciones:observaciones.value,
-  Fecha:new Date().toISOString()
- });
-
- localStorage.setItem("registros",JSON.stringify(registros));
-
- codigo.value="";
- ubicacion.value="";
- cantidad.value="";
- observaciones.value="";
- info.classList.add("hidden");
-
- actualizar();
- alert("Registro guardado correctamente");
+  if(!codigo.value||!ubicacion.value||cantidad.value===""){
+    alert("Complete los campos obligatorios");
+    return;
+  }
+  registros.push({
+    DNI:DNI_ACTUAL,
+    Codigo:codigo.value,
+    Ubicacion_Real:ubicacion.value,
+    Cantidad_Real:cantidad.value,
+    Observaciones:observaciones.value,
+    Fecha:new Date().toISOString()
+  });
+  codigo.value="";ubicacion.value="";cantidad.value="";observaciones.value="";
+  info.classList.add("hidden");
+  actualizar();
+  alert("Registro guardado");
 }
 
 function actualizar(){
- contador.innerText=registros.length;
- listaRegistros.innerHTML=registros.map(r=>`
-  <div class="result">
-    ${r.Código} - ${r.Cantidad_Real}<br>
-    <small>${r.Observaciones || ""}</small>
-  </div>`).join("");
+  contador.innerText=registros.length;
+  listaRegistros.innerHTML=registros.map(r=>`
+    <div class="result">
+      ${r.Codigo} - ${r.Cantidad_Real} (${r.Ubicacion_Real})
+    </div>`).join("");
 }
 
 function exportar(){
- let csv="DNI,Código,Ubicación_Real,Cantidad_Real,Observaciones,Fecha\n";
- registros.forEach(r=>{
-  csv+=`${r.DNI},${r.Código},${r.Ubicación_Real},${r.Cantidad_Real},"${r.Observaciones}",${r.Fecha}\n`;
- });
- const a=document.createElement("a");
- a.href=URL.createObjectURL(new Blob([csv],{type:"text/csv"}));
- a.download="inventario_2026.csv";
- a.click();
+  if(registros.length===0){alert("No hay registros");return;}
+  const d=new Date();
+  const f=d.getFullYear()+String(d.getMonth()+1).padStart(2,"0")+String(d.getDate()).padStart(2,"0")+"_"+String(d.getHours()).padStart(2,"0")+String(d.getMinutes()).padStart(2,"0")+String(d.getSeconds()).padStart(2,"0");
+  let csv="DNI,Codigo,Ubicacion_Real,Cantidad_Real,Observaciones,Fecha\n";
+  registros.forEach(r=>{
+    csv+=`${r.DNI},${r.Codigo},${r.Ubicacion_Real},${r.Cantidad_Real},"${r.Observaciones}",${r.Fecha}\n`;
+  });
+  const a=document.createElement("a");
+  a.href=URL.createObjectURL(new Blob([csv],{type:"text/csv"}));
+  a.download=`inventario_${DNI_ACTUAL}_${f}.csv`;
+  a.click();
 }
 
 function borrar(){
- if(confirm("¿Borrar todos los registros?")){
-  registros=[];
-  localStorage.removeItem("registros");
-  actualizar();
- }
+  if(confirm("¿Borrar todos los registros?")){
+    registros=[];
+    actualizar();
+  }
 }
 </script>
 
 </body>
 </html>
+

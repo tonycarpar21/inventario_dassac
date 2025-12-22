@@ -245,13 +245,24 @@ document.addEventListener("DOMContentLoaded",()=>{
   catalogo=Object.entries(window.catalogoCompleto).map(([c,d])=>({...d,codigo:c}));
 });
 
-/* OCULTAR SUGERENCIAS AL HACER CLICK FUERA O SCROLL */
-document.addEventListener("click",e=>{
-  if(!e.target.closest("#unidad")){
-    listaUnidades.classList.add("hidden");
+/* ===== PROTECCIÓN CONTRA SALIDA ACCIDENTAL ===== */
+
+/* Advertir si hay registros sin exportar */
+window.addEventListener("beforeunload", function (e) {
+  if (registros.length > 0) {
+    e.preventDefault();
+    e.returnValue = "";
   }
 });
-window.addEventListener("scroll",()=>listaUnidades.classList.add("hidden"));
+
+/* Neutralizar botón ATRÁS */
+history.pushState(null, "", location.href);
+window.addEventListener("popstate", function () {
+  history.pushState(null, "", location.href);
+  alert("⚠️ Antes de salir, exporte el inventario.");
+});
+
+/* ============================================= */
 
 function confirmarDNI(){
   dni=dniInput.value.trim();
@@ -290,32 +301,22 @@ function seleccionarItem(c){
   info.innerHTML=`<b>${i.descripcion}</b>`;
   info.classList.remove("hidden");
   listaItems.classList.add("hidden");
-  codigo.blur();
 }
 
 function filtrarUnidades(){
   const v=unidad.value.toUpperCase();
-
-  if(unidadEsperada && v && v!==unidadEsperada){
-    unidad.classList.add("rojo");
-  }else{
-    unidad.classList.remove("rojo");
-  }
-
+  unidad.classList.toggle("rojo",unidadEsperada && v && v!==unidadEsperada);
   const f=unidades.filter(u=>u.includes(v));
   if(!f.length){listaUnidades.classList.add("hidden");return;}
-
   listaUnidades.innerHTML=f.map(u=>`
     <div class="option"
       onmousedown="
         unidad.value='${u}';
         unidad.classList.toggle('rojo',unidadEsperada && u!==unidadEsperada);
         listaUnidades.classList.add('hidden');
-        unidad.blur();
       ">
       ${u}
     </div>`).join("");
-
   listaUnidades.classList.remove("hidden");
 }
 
@@ -325,12 +326,7 @@ function guardar(){
     return;
   }
   const rojo = unidadEsperada && unidad.value!==unidadEsperada;
-  registros.push({
-    codigo:codigo.value,
-    cantidad:cantidad.value,
-    unidad:unidad.value,
-    rojo
-  });
+  registros.push({codigo:codigo.value,cantidad:cantidad.value,unidad:unidad.value,rojo});
   codigo.value=ubicacion.value=cantidad.value=unidad.value=obs.value="";
   unidadEsperada="";
   info.classList.add("hidden");

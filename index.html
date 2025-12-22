@@ -2,6 +2,9 @@
 =====================================================
   SISTEMA DE INVENTARIO FÍSICO 2026
   © Derechos reservados DAS Logistics Solutions S.A.C
+  Prohibida su copia, modificación o distribución
+  sin autorización expresa del autor.
+
   Programador: Anthony Carranza Paredes
 =====================================================
 -->
@@ -16,342 +19,350 @@
 <style>
 :root{
   --azul:#0b3c5d;
-  --azul-claro:#1d6fa5;
-  --naranja:#f28c28;
   --gris:#f4f6f8;
-  --texto:#1f2933;
-  --asterisco:#9ca3af;
-  --alerta:#dc2626;
+  --naranja:#f28c28;
+  --rojo:#b00020;
 }
 
 *{box-sizing:border-box;font-family:Segoe UI,Tahoma,sans-serif}
 
-body{margin:0;padding:20px;background:var(--gris);color:var(--texto)}
-
-.logo-top{display:flex;justify-content:center;margin:10px 0 25px}
-.logo-top img{height:70px}
-
-.dni-bar{text-align:center;font-weight:700;color:var(--azul);margin-bottom:20px}
-
-.login{
-  max-width:420px;
-  margin:80px auto;
-  background:white;
-  padding:25px;
-  border-radius:18px;
-  box-shadow:0 8px 20px rgba(0,0,0,.12);
+body{
+  margin:0;
+  padding:20px;
+  background:var(--gris);
 }
 
+/* HEADER */
+.header{text-align:center;margin-bottom:20px}
+.header img{height:80px}
+
+/* DNI */
+.dni-box{
+  background:white;
+  padding:15px;
+  border-radius:12px;
+  max-width:400px;
+  margin:0 auto 20px auto;
+  box-shadow:0 3px 8px rgba(0,0,0,.05);
+}
+
+/* TABS */
 .tabs{
   display:flex;
   background:white;
-  border-radius:14px;
+  border-radius:12px;
   overflow:hidden;
-  margin-bottom:20px;
-  box-shadow:0 3px 8px rgba(0,0,0,.06);
+  margin-bottom:15px;
 }
-
 .tab{
   flex:1;
-  padding:14px;
+  padding:12px;
   text-align:center;
   cursor:pointer;
   background:#e9edf1;
-  font-weight:500;
 }
 .tab.active{
   background:white;
-  color:var(--azul);
-  border-bottom:4px solid var(--naranja);
+  border-bottom:3px solid var(--naranja);
 }
 
+/* CARD */
 .card{
   background:white;
-  border-radius:18px;
   padding:20px;
-  margin-bottom:20px;
-  box-shadow:0 4px 12px rgba(0,0,0,.07);
+  border-radius:15px;
+  box-shadow:0 3px 8px rgba(0,0,0,.05);
 }
 
 .hidden{display:none}
 
 label{font-weight:600;margin-top:12px;display:block}
-.req{color:var(--asterisco);margin-left:4px}
+.req{color:#888}
 
 input,button{
   width:100%;
   padding:12px;
   margin-top:6px;
   font-size:15px;
-  border-radius:10px;
+  border-radius:8px;
   border:1px solid #ccc;
+}
+
+input.rojo{
+  border:2px solid var(--rojo);
+  background:#fff5f5;
 }
 
 button{
   background:var(--azul);
   color:white;
   border:none;
-  margin-top:18px;
-}
-button:hover{background:var(--azul-claro)}
-
-.row{display:flex;gap:15px}
-.col{flex:1}
-
-.items-list{
-  max-height:240px;
-  overflow-y:auto;
-  border:1px solid #ddd;
-  margin-top:5px;
-  border-radius:10px;
-  background:white;
-  position:relative;
-  z-index:5;
-}
-
-.item-option{
-  padding:10px;
-  border-bottom:1px solid #eee;
+  margin-top:15px;
   cursor:pointer;
 }
-.item-option:hover{background:#f1f5f9}
 
-.item-info{
-  margin-top:12px;
-  padding:12px;
+/* FLEX */
+.flex{display:flex;gap:12px}
+.flex > div{flex:1}
+
+/* AUTOCOMPLETE */
+.list{
+  border:1px solid #ddd;
+  max-height:220px;
+  overflow-y:auto;
+  border-radius:8px;
+  background:white;
+}
+.option{
+  padding:8px;
+  cursor:pointer;
+  border-bottom:1px solid #eee;
+}
+.option:hover{background:#f1f5f9}
+
+/* INFO */
+.result{
   background:#f8fafc;
-  border-left:4px solid var(--azul);
-  border-radius:10px;
-  font-size:14px;
+  padding:10px;
+  border-left:5px solid var(--azul);
+  border-radius:8px;
+  margin-top:10px;
 }
 
-.unidad-diferente{
-  border:2px solid var(--alerta)!important;
-  color:var(--alerta);
-  font-weight:600;
+/* REGISTROS */
+.registro{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:8px;
+  border-bottom:1px solid #eee;
+}
+.registro.rojo{
+  background:#ffecec;
+  color:var(--rojo);
 }
 
+/* BOTÓN TACHO */
+.btn-del{
+  width:32px;
+  height:32px;
+  background:#e5e7eb;
+  border:none;
+  border-radius:6px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  cursor:pointer;
+  font-size:16px;
+  padding:0;
+}
+.btn-del:hover{background:#d1d5db}
+
+/* FOOTER */
 .footer{
   text-align:center;
   margin-top:60px;
-  color:#555;
-}
-.footer .titulo{
-  font-size:22px;
-  font-weight:700;
-  color:var(--azul);
+  font-size:14px;
 }
 </style>
 </head>
 
 <body>
 
-<div class="logo-top">
+<div class="header">
   <img src="logo_dassac.png">
 </div>
 
-<!-- LOGIN -->
-<div id="login" class="login">
+<div class="dni-box" id="dniBox">
   <label>DNI <span class="req">*</span></label>
   <input id="dniInput">
-  <button onclick="ingresar()">Ingresar</button>
+  <button onclick="confirmarDNI()">Ingresar</button>
 </div>
 
-<!-- APP -->
 <div id="app" class="hidden">
 
-  <div class="dni-bar">
-    DNI: <span id="dniMostrado"></span>
-  </div>
+<div class="dni-box">
+  DNI: <b id="dniFijo"></b>
+</div>
 
-  <div class="tabs">
-    <div class="tab active" onclick="mostrarTab('registrar',this)">Registrar</div>
-    <div class="tab" onclick="mostrarTab('registros',this)">
-      Mis Registros (<span id="contador">0</span>)
+<div class="tabs">
+  <div class="tab active" onclick="mostrarTab('reg',this)">Registrar</div>
+  <div class="tab" onclick="mostrarTab('mis',this)">
+    Mis registros (<span id="contador">0</span>)
+  </div>
+</div>
+
+<!-- REGISTRAR -->
+<div id="tab-reg" class="card">
+  <label>Código del item <span class="req">*</span></label>
+  <input id="codigo" onkeyup="filtrarItems()">
+  <div id="listaItems" class="list hidden"></div>
+
+  <div id="info" class="result hidden"></div>
+
+  <label>Ubicación <span class="req">*</span></label>
+  <input id="ubicacion">
+
+  <div class="flex">
+    <div>
+      <label>Cantidad <span class="req">*</span></label>
+      <input id="cantidad" type="number" min="0">
+    </div>
+    <div>
+      <label>Unidad de medida <span class="req">*</span></label>
+      <input id="unidad" onkeyup="filtrarUnidades()">
+      <div id="listaUnidades" class="list hidden"></div>
     </div>
   </div>
 
-  <!-- REGISTRAR -->
-  <div id="tab-registrar" class="card">
+  <label>Observaciones (opcional)</label>
+  <input id="obs">
 
-    <label>Código del Item <span class="req">*</span></label>
-    <input id="codigo" onkeyup="filtrarItem()">
-    <div id="listaItems" class="items-list hidden"></div>
+  <button onclick="guardar()">Guardar</button>
+</div>
 
-    <!-- INFO ITEM -->
-    <div id="infoItem" class="item-info hidden"></div>
-
-    <label>Ubicación <span class="req">*</span></label>
-    <input id="ubicacion">
-
-    <div class="row">
-      <div class="col">
-        <label>Cantidad <span class="req">*</span></label>
-        <input id="cantidad" type="number" min="0">
-      </div>
-      <div class="col">
-        <label>Unidad de Medida <span class="req">*</span></label>
-        <input id="unidad" onkeyup="filtrarUnidad()">
-        <div id="listaUnidades" class="items-list hidden"></div>
-      </div>
-    </div>
-
-    <label>Observaciones (opcional)</label>
-    <input id="obs">
-
-    <button onclick="guardar()">Guardar</button>
-  </div>
-
-  <!-- REGISTROS -->
-  <div id="tab-registros" class="card hidden">
-    <button onclick="exportar()">📥 Exportar CSV</button>
-    <div id="listaRegistros" style="margin-top:15px"></div>
-  </div>
+<!-- MIS REGISTROS -->
+<div id="tab-mis" class="card hidden">
+  <button onclick="exportar()">📥 Exportar CSV</button>
+  <div id="listaRegistros"></div>
+</div>
 
 </div>
 
 <div class="footer">
-  <div class="titulo">Inventario Físico 2026</div>
-  © Derechos reservados <strong>DAS Logistics Solutions S.A.C</strong><br>
+  <h2>Inventario Físico 2026</h2>
+  © Derechos reservados DAS Logistics Solutions S.A.C<br>
   Programador: <strong>Anthony Carranza Paredes</strong>
 </div>
 
 <script src="datos_items.js"></script>
 
 <script>
-let DNI="";
-let items=[];
-let registros=[];
-let unidadEsperada="";
-
-const unidades=[
- "NIU","UND","PZA","PCS","PAR",
- "KG","G","TON",
- "L","ML","GAL",
- "M","CM","MM","M2","M3",
- "CAJ","PAQ","SAC","BOL","ROL",
- "JGO","KIT"
-];
-
-function ingresar(){
- if(!dniInput.value.trim()){alert("Ingrese DNI");return}
- DNI=dniInput.value.trim();
- dniMostrado.innerText=DNI;
- login.classList.add("hidden");
- app.classList.remove("hidden");
-}
-
-function mostrarTab(tab,el){
- document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"));
- el.classList.add("active");
- document.querySelectorAll("[id^='tab-']").forEach(t=>t.classList.add("hidden"));
- document.getElementById("tab-"+tab).classList.remove("hidden");
-}
+const unidades=["NIU","PIEZAS","KG","G","L","ML","GAL","M","CM","MM","CAJA","PAQUETE"];
+let catalogo=[],registros=[],dni="",unidadEsperada="";
 
 document.addEventListener("DOMContentLoaded",()=>{
- if(!window.catalogoCompleto){
-   alert("Error: no se cargó datos_items.js");
-   return;
- }
- items=Object.entries(window.catalogoCompleto).map(([c,d])=>({
-   codigo:c,
-   descripcion:d.descripcion,
-   ubicacion:d.ubicacion,
-   saldo:d.saldo,
-   unidad:d.unidad
- }));
+  catalogo=Object.entries(window.catalogoCompleto).map(([c,d])=>({...d,codigo:c}));
 });
 
-/* AUTOCOMPLETE ITEM */
-function filtrarItem(){
- const v=codigo.value.toLowerCase();
- if(v.length<2){listaItems.classList.add("hidden");return}
- listaItems.innerHTML=items
-   .filter(i=>i.codigo.includes(v)||i.descripcion.toLowerCase().includes(v))
-   .slice(0,10)
-   .map(i=>`
-     <div class="item-option" onmousedown="seleccionarItem('${i.codigo}')">
-       <b>${i.codigo}</b> - ${i.descripcion}
-     </div>
-   `).join("");
- listaItems.classList.remove("hidden");
+/* OCULTAR SUGERENCIAS AL HACER CLICK FUERA O SCROLL */
+document.addEventListener("click",e=>{
+  if(!e.target.closest("#unidad")){
+    listaUnidades.classList.add("hidden");
+  }
+});
+window.addEventListener("scroll",()=>listaUnidades.classList.add("hidden"));
+
+function confirmarDNI(){
+  dni=dniInput.value.trim();
+  if(!dni)return alert("Ingrese DNI");
+  dniFijo.innerText=dni;
+  dniBox.classList.add("hidden");
+  app.classList.remove("hidden");
+}
+
+function mostrarTab(t,e){
+  document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));
+  e.classList.add("active");
+  document.querySelectorAll("[id^='tab-']").forEach(x=>x.classList.add("hidden"));
+  document.getElementById("tab-"+t).classList.remove("hidden");
+}
+
+function filtrarItems(){
+  const v=codigo.value.toLowerCase();
+  if(v.length<2){listaItems.classList.add("hidden");return;}
+  const f=catalogo.filter(i=>i.codigo.includes(v)||i.descripcion.toLowerCase().includes(v)).slice(0,10);
+  listaItems.innerHTML=f.map(i=>`
+    <div class="option" onmousedown="seleccionarItem('${i.codigo}')">
+      <b>${i.codigo}</b> - ${i.descripcion}
+    </div>`).join("");
+  listaItems.classList.remove("hidden");
 }
 
 function seleccionarItem(c){
- const i=items.find(x=>x.codigo===c);
- codigo.value=c;
- ubicacion.value=i.ubicacion||"";
- cantidad.value=i.saldo||"";
- unidad.value=i.unidad||"";
- unidadEsperada=i.unidad||"";
- unidad.classList.remove("unidad-diferente");
-
- infoItem.innerHTML=`
-   <b>${i.descripcion}</b><br>
-   📍 Ubicación esperada: ${i.ubicacion || "SIN"}<br>
-   📦 Cantidad esperada: ${i.saldo} ${i.unidad}
- `;
- infoItem.classList.remove("hidden");
-
- listaItems.classList.add("hidden");
+  const i=catalogo.find(x=>x.codigo===c);
+  codigo.value=i.codigo;
+  ubicacion.value=i.ubicacion||"";
+  cantidad.value=i.saldo??"";
+  unidad.value=i.unidad||"";
+  unidadEsperada=i.unidad||"";
+  unidad.classList.remove("rojo");
+  info.innerHTML=`<b>${i.descripcion}</b>`;
+  info.classList.remove("hidden");
+  listaItems.classList.add("hidden");
+  codigo.blur();
 }
 
-/* AUTOCOMPLETE UNIDAD */
-function filtrarUnidad(){
- const v=unidad.value.toUpperCase();
- if(!v){listaUnidades.classList.add("hidden");return}
- listaUnidades.innerHTML=unidades
-  .filter(u=>u.includes(v))
-  .slice(0,8)
-  .map(u=>`<div class="item-option" onmousedown="seleccionarUnidad('${u}')">${u}</div>`)
-  .join("");
- listaUnidades.classList.remove("hidden");
-}
+function filtrarUnidades(){
+  const v=unidad.value.toUpperCase();
 
-function seleccionarUnidad(u){
- unidad.value=u;
- listaUnidades.classList.add("hidden");
- if(unidadEsperada && u!==unidadEsperada){
-   unidad.classList.add("unidad-diferente");
- }else{
-   unidad.classList.remove("unidad-diferente");
- }
+  if(unidadEsperada && v && v!==unidadEsperada){
+    unidad.classList.add("rojo");
+  }else{
+    unidad.classList.remove("rojo");
+  }
+
+  const f=unidades.filter(u=>u.includes(v));
+  if(!f.length){listaUnidades.classList.add("hidden");return;}
+
+  listaUnidades.innerHTML=f.map(u=>`
+    <div class="option"
+      onmousedown="
+        unidad.value='${u}';
+        unidad.classList.toggle('rojo',unidadEsperada && u!==unidadEsperada);
+        listaUnidades.classList.add('hidden');
+        unidad.blur();
+      ">
+      ${u}
+    </div>`).join("");
+
+  listaUnidades.classList.remove("hidden");
 }
 
 function guardar(){
- if(!codigo.value||!ubicacion.value||!cantidad.value||!unidad.value){
-   alert("Complete todos los campos obligatorios");
-   return;
- }
- registros.push({
-   codigo:codigo.value,
-   cantidad:cantidad.value,
-   unidad:unidad.value
- });
- actualizarRegistros();
- codigo.value=ubicacion.value=cantidad.value=unidad.value=obs.value="";
- infoItem.classList.add("hidden");
+  if(!codigo.value||!ubicacion.value||!cantidad.value||!unidad.value){
+    alert("Complete los campos obligatorios");
+    return;
+  }
+  const rojo = unidadEsperada && unidad.value!==unidadEsperada;
+  registros.push({
+    codigo:codigo.value,
+    cantidad:cantidad.value,
+    unidad:unidad.value,
+    rojo
+  });
+  codigo.value=ubicacion.value=cantidad.value=unidad.value=obs.value="";
+  unidadEsperada="";
+  info.classList.add("hidden");
+  actualizar();
 }
 
-function actualizarRegistros(){
- contador.innerText=registros.length;
- listaRegistros.innerHTML=registros.map((r,i)=>`
-   <div>${i+1}. <b>${r.codigo}</b> – ${r.cantidad} ${r.unidad}</div>
- `).join("");
+function actualizar(){
+  contador.innerText=registros.length;
+  listaRegistros.innerHTML=registros.map((r,i)=>`
+    <div class="registro ${r.rojo?'rojo':''}">
+      ${i+1}. ${r.codigo} - ${r.cantidad} ${r.unidad}
+      <button class="btn-del" onclick="borrar(${i})">🗑️</button>
+    </div>`).join("");
+}
+
+function borrar(i){
+  if(confirm("¿Eliminar este registro?")){
+    registros.splice(i,1);
+    actualizar();
+  }
 }
 
 function exportar(){
- const fecha=new Date().toISOString().replace(/[:.]/g,"-");
- let csv="DNI,Codigo,Cantidad,Unidad\n";
- registros.forEach(r=>{
-   csv+=`${DNI},${r.codigo},${r.cantidad},${r.unidad}\n`;
- });
- const a=document.createElement("a");
- a.href=URL.createObjectURL(new Blob([csv],{type:"text/csv"}));
- a.download=`inventario_${DNI}_${fecha}.csv`;
- a.click();
- registros=[];
- actualizarRegistros();
+  if(!registros.length)return;
+  let csv="DNI,Código,Cantidad,Unidad\n";
+  registros.forEach(r=>csv+=`${dni},${r.codigo},${r.cantidad},${r.unidad}\n`);
+  const a=document.createElement("a");
+  a.href=URL.createObjectURL(new Blob([csv],{type:"text/csv"}));
+  a.download=`inventario_${dni}_${new Date().toISOString().replace(/[:.]/g,'-')}.csv`;
+  a.click();
+  registros=[];
+  actualizar();
 }
 </script>
 

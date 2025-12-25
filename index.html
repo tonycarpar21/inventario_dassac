@@ -21,59 +21,28 @@
   --azul:#0b3c5d;
   --gris:#f4f6f8;
   --naranja:#f28c28;
-  --rojo:#b00020;
 }
 
 *{box-sizing:border-box;font-family:Segoe UI,Tahoma,sans-serif}
 
-body{
-  margin:0;
-  padding:20px;
-  background:var(--gris);
-}
+body{margin:0;padding:20px;background:var(--gris)}
 
-/* HEADER */
 .header{text-align:center;margin-bottom:20px}
 .header img{height:80px}
 
-/* DNI */
 .dni-box{
   background:white;
   padding:15px;
   border-radius:12px;
   max-width:400px;
   margin:0 auto 20px auto;
-  box-shadow:0 3px 8px rgba(0,0,0,.05);
 }
 
-/* TABS */
-.tabs{
-  display:flex;
-  background:white;
-  border-radius:12px;
-  overflow:hidden;
-  margin-bottom:15px;
-}
-.tab{
-  flex:1;
-  padding:12px;
-  text-align:center;
-  cursor:pointer;
-  background:#e9edf1;
-}
-.tab.active{
-  background:white;
-  border-bottom:3px solid var(--naranja);
-}
+.tabs{display:flex;background:white;border-radius:12px;overflow:hidden;margin-bottom:15px}
+.tab{flex:1;padding:12px;text-align:center;cursor:pointer;background:#e9edf1}
+.tab.active{background:white;border-bottom:3px solid var(--naranja)}
 
-/* CARD */
-.card{
-  background:white;
-  padding:20px;
-  border-radius:15px;
-  box-shadow:0 3px 8px rgba(0,0,0,.05);
-}
-
+.card{background:white;padding:20px;border-radius:15px}
 .hidden{display:none}
 
 label{font-weight:600;margin-top:12px;display:block}
@@ -88,82 +57,61 @@ input,button{
   border:1px solid #ccc;
 }
 
-input.rojo{
-  border:2px solid var(--rojo);
-  background:#fff5f5;
-}
+button{background:var(--azul);color:white;border:none;margin-top:15px;cursor:pointer}
 
-button{
-  background:var(--azul);
-  color:white;
-  border:none;
-  margin-top:15px;
-  cursor:pointer;
-}
-
-/* FLEX */
 .flex{display:flex;gap:12px}
-.flex > div{flex:1}
+.flex>div{flex:1}
 
-/* AUTOCOMPLETE */
 .list{
   border:1px solid #ddd;
   max-height:220px;
   overflow-y:auto;
   border-radius:8px;
-  background:white;
 }
-.option{
-  padding:8px;
-  cursor:pointer;
-  border-bottom:1px solid #eee;
-}
+
+.option{padding:8px;cursor:pointer;border-bottom:1px solid #eee}
 .option:hover{background:#f1f5f9}
 
-/* INFO */
-.result{
-  background:#f8fafc;
-  padding:10px;
-  border-left:5px solid var(--azul);
-  border-radius:8px;
-  margin-top:10px;
-}
-
-/* REGISTROS */
+/* ===== ESTILO MIS REGISTROS (COPIADO DEL CÓDIGO QUE TE GUSTABA) ===== */
 .registro{
+  padding:10px;
+  border-bottom:1px solid #eee;
   display:flex;
   justify-content:space-between;
-  align-items:center;
-  padding:8px;
-  border-bottom:1px solid #eee;
-}
-.registro.rojo{
-  background:#ffecec;
-  color:var(--rojo);
+  gap:10px;
 }
 
-/* BOTÓN TACHO */
 .btn-del{
   width:32px;
   height:32px;
   background:#e5e7eb;
   border:none;
   border-radius:6px;
+  cursor:pointer;
   display:flex;
   align-items:center;
   justify-content:center;
-  cursor:pointer;
   font-size:16px;
+  line-height:1;
   padding:0;
 }
-.btn-del:hover{background:#d1d5db}
+/* ================================================================ */
 
-/* FOOTER */
 .footer{
   text-align:center;
   margin-top:60px;
   font-size:14px;
 }
+
+/* ===== SOLO ESTÉTICA REGISTRAR POR UBICACIÓN ===== */
+.cant-uni{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  margin-top:6px;
+}
+.cant-uni input{width:90px}
+.cant-uni span{font-weight:600}
 </style>
 </head>
 
@@ -187,18 +135,16 @@ button{
 
 <div class="tabs">
   <div class="tab active" onclick="mostrarTab('reg',this)">Registrar</div>
+  <div class="tab" onclick="mostrarTab('ubi',this)">Registrar por ubicación</div>
   <div class="tab" onclick="mostrarTab('mis',this)">
     Mis registros (<span id="contador">0</span>)
   </div>
 </div>
 
-<!-- REGISTRAR -->
 <div id="tab-reg" class="card">
   <label>Código del item <span class="req">*</span></label>
   <input id="codigo" onkeyup="filtrarItems()">
   <div id="listaItems" class="list hidden"></div>
-
-  <div id="info" class="result hidden"></div>
 
   <label>Ubicación <span class="req">*</span></label>
   <input id="ubicacion">
@@ -209,21 +155,29 @@ button{
       <input id="cantidad" type="number" min="0">
     </div>
     <div>
-      <label>Unidad de medida <span class="req">*</span></label>
-      <input id="unidad" onkeyup="filtrarUnidades()">
-      <div id="listaUnidades" class="list hidden"></div>
+      <label>Unidad de medida</label>
+      <input id="unidad" readonly>
     </div>
   </div>
 
-  <label>Observaciones (opcional)</label>
+  <label>Observaciones</label>
   <input id="obs">
 
   <button onclick="guardar()">Guardar</button>
 </div>
 
-<!-- MIS REGISTROS -->
+<div id="tab-ubi" class="card hidden">
+  <label>Ubicación <span class="req">*</span></label>
+  <input id="ubicacionMasiva" onkeyup="filtrarUbicaciones()">
+  <div id="listaUbicaciones" class="list hidden"></div>
+
+  <button onclick="cargarPorUbicacion()">Cargar items</button>
+  <div id="listaUbicacion" style="margin-top:20px"></div>
+  <button onclick="guardarPorUbicacion()">Guardar</button>
+</div>
+
 <div id="tab-mis" class="card hidden">
-  <button onclick="exportar()">📥 Exportar CSV</button>
+  <button onclick="exportar()">Exportar CSV</button>
   <div id="listaRegistros"></div>
 </div>
 
@@ -238,31 +192,13 @@ button{
 <script src="datos_items.js"></script>
 
 <script>
-const unidades=["NIU","PIEZAS","KG","G","L","ML","GAL","M","CM","MM","CAJA","PAQUETE"];
-let catalogo=[],registros=[],dni="",unidadEsperada="";
+let catalogo=[],registros=[],dni="";
+let itemsUbicacion=[],ubicaciones=[];
 
 document.addEventListener("DOMContentLoaded",()=>{
   catalogo=Object.entries(window.catalogoCompleto).map(([c,d])=>({...d,codigo:c}));
+  ubicaciones=[...new Set(catalogo.map(i=>i.ubicacion).filter(u=>u))];
 });
-
-/* ===== PROTECCIÓN CONTRA SALIDA ACCIDENTAL ===== */
-
-/* Advertir si hay registros sin exportar */
-window.addEventListener("beforeunload", function (e) {
-  if (registros.length > 0) {
-    e.preventDefault();
-    e.returnValue = "";
-  }
-});
-
-/* Neutralizar botón ATRÁS */
-history.pushState(null, "", location.href);
-window.addEventListener("popstate", function () {
-  history.pushState(null, "", location.href);
-  alert("⚠️ Antes de salir, exporte el inventario.");
-});
-
-/* ============================================= */
 
 function confirmarDNI(){
   dni=dniInput.value.trim();
@@ -272,20 +208,20 @@ function confirmarDNI(){
   app.classList.remove("hidden");
 }
 
-function mostrarTab(t,e){
-  document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));
-  e.classList.add("active");
-  document.querySelectorAll("[id^='tab-']").forEach(x=>x.classList.add("hidden"));
-  document.getElementById("tab-"+t).classList.remove("hidden");
+function mostrarTab(tab,el){
+  document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"));
+  el.classList.add("active");
+  document.querySelectorAll("[id^='tab-']").forEach(d=>d.classList.add("hidden"));
+  document.getElementById("tab-"+tab).classList.remove("hidden");
 }
 
 function filtrarItems(){
   const v=codigo.value.toLowerCase();
   if(v.length<2){listaItems.classList.add("hidden");return;}
-  const f=catalogo.filter(i=>i.codigo.includes(v)||i.descripcion.toLowerCase().includes(v)).slice(0,10);
+  const f=catalogo.filter(i=>i.codigo.includes(v)).slice(0,10);
   listaItems.innerHTML=f.map(i=>`
     <div class="option" onmousedown="seleccionarItem('${i.codigo}')">
-      <b>${i.codigo}</b> - ${i.descripcion}
+      ${i.codigo} - ${i.descripcion}
     </div>`).join("");
   listaItems.classList.remove("hidden");
 }
@@ -296,70 +232,140 @@ function seleccionarItem(c){
   ubicacion.value=i.ubicacion||"";
   cantidad.value=i.saldo??"";
   unidad.value=i.unidad||"";
-  unidadEsperada=i.unidad||"";
-  unidad.classList.remove("rojo");
-  info.innerHTML=`<b>${i.descripcion}</b>`;
-  info.classList.remove("hidden");
   listaItems.classList.add("hidden");
 }
 
-function filtrarUnidades(){
-  const v=unidad.value.toUpperCase();
-  unidad.classList.toggle("rojo",unidadEsperada && v && v!==unidadEsperada);
-  const f=unidades.filter(u=>u.includes(v));
-  if(!f.length){listaUnidades.classList.add("hidden");return;}
-  listaUnidades.innerHTML=f.map(u=>`
-    <div class="option"
-      onmousedown="
-        unidad.value='${u}';
-        unidad.classList.toggle('rojo',unidadEsperada && u!==unidadEsperada);
-        listaUnidades.classList.add('hidden');
-      ">
-      ${u}
-    </div>`).join("");
-  listaUnidades.classList.remove("hidden");
+function guardar(){
+  registros.push({
+    codigo:codigo.value,
+    ubicacion:ubicacion.value,
+    cantidad:cantidad.value,
+    unidad:unidad.value,
+    observaciones:obs.value
+  });
+  codigo.value=ubicacion.value=cantidad.value=unidad.value=obs.value="";
+  actualizar();
 }
 
-function guardar(){
-  if(!codigo.value||!ubicacion.value||!cantidad.value||!unidad.value){
-    alert("Complete los campos obligatorios");
-    return;
-  }
-  const rojo = unidadEsperada && unidad.value!==unidadEsperada;
-  registros.push({codigo:codigo.value,cantidad:cantidad.value,unidad:unidad.value,rojo});
-  codigo.value=ubicacion.value=cantidad.value=unidad.value=obs.value="";
-  unidadEsperada="";
-  info.classList.add("hidden");
+function filtrarUbicaciones(){
+  const v=ubicacionMasiva.value.toLowerCase();
+  if(!v){listaUbicaciones.classList.add("hidden");return;}
+  const f=ubicaciones.filter(u=>u.toLowerCase().includes(v)).slice(0,10);
+  listaUbicaciones.innerHTML=f.map(u=>`
+    <div class="option" onmousedown="
+      ubicacionMasiva.value='${u}';
+      listaUbicaciones.classList.add('hidden');
+    ">${u}</div>`).join("");
+  listaUbicaciones.classList.remove("hidden");
+}
+
+function cargarPorUbicacion(){
+  const ub=ubicacionMasiva.value.trim();
+  if(!ub)return alert("Ingrese ubicación");
+
+  itemsUbicacion=catalogo.filter(i=>i.ubicacion===ub && Number(i.saldo)>0);
+
+  listaUbicacion.innerHTML=itemsUbicacion.map((i,idx)=>`
+    <div class="registro">
+      <div style="width:100%">
+        <b>${i.codigo}</b> - ${i.descripcion}
+        <div class="cant-uni">
+          <input type="number" min="0" value="${i.saldo}" id="cantU_${idx}">
+          <span>${i.unidad}</span>
+        </div>
+        Observaciones:
+        <input id="obsU_${idx}">
+      </div>
+    </div>`).join("");
+}
+
+function guardarPorUbicacion(){
+  itemsUbicacion.forEach((i,idx)=>{
+    const c=Number(document.getElementById(`cantU_${idx}`).value);
+    const o=document.getElementById(`obsU_${idx}`).value;
+    if(c>0){
+      registros.push({
+        codigo:i.codigo,
+        ubicacion:i.ubicacion,
+        cantidad:c,
+        unidad:i.unidad,
+        observaciones:o
+      });
+    }
+  });
+  itemsUbicacion=[];
+  ubicacionMasiva.value="";
+  listaUbicacion.innerHTML="";
   actualizar();
 }
 
 function actualizar(){
   contador.innerText=registros.length;
   listaRegistros.innerHTML=registros.map((r,i)=>`
-    <div class="registro ${r.rojo?'rojo':''}">
-      ${i+1}. ${r.codigo} - ${r.cantidad} ${r.unidad}
-      <button class="btn-del" onclick="borrar(${i})">🗑️</button>
+    <div class="registro">
+      <div>
+        <b>${i+1}. ${r.codigo}</b><br>
+        Ubicación: ${r.ubicacion}<br>
+        Cantidad: ${r.cantidad} ${r.unidad}
+        ${r.observaciones?`<br><small>Obs: ${r.observaciones}</small>`:""}
+      </div>
+    <button class="btn-del" onclick="borrarRegistro(${i})">🗑️</button>
     </div>`).join("");
 }
 
-function borrar(i){
-  if(confirm("¿Eliminar este registro?")){
+function exportar(){
+  if (!registros.length) {
+    alert("No hay registros para exportar.");
+    return;
+  }
+
+  let csv = "DNI,Código,Ubicación,Cantidad,Unidad,Observaciones\n";
+  registros.forEach(r => {
+    csv += `${dni},${r.codigo},${r.ubicacion},${r.cantidad},${r.unidad},"${r.observaciones || ""}"\n`;
+  });
+
+  const fecha = new Date().toISOString().replace(/[:.]/g, "-");
+  const nombreArchivo = `inventario_${dni}_${fecha}.csv`;
+
+  const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+  const url = URL.createObjectURL(blob);
+
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = nombreArchivo;
+  document.body.appendChild(a);
+  a.click();
+
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+
+  registros = [];
+  actualizar();
+}
+
+function borrarRegistro(i){
+  if(confirm("¿Está seguro de eliminar este registro?")){
     registros.splice(i,1);
     actualizar();
   }
 }
 
-function exportar(){
-  if(!registros.length)return;
-  let csv="DNI,Código,Cantidad,Unidad\n";
-  registros.forEach(r=>csv+=`${dni},${r.codigo},${r.cantidad},${r.unidad}\n`);
-  const a=document.createElement("a");
-  a.href=URL.createObjectURL(new Blob([csv],{type:"text/csv"}));
-  a.download=`inventario_${dni}_${new Date().toISOString().replace(/[:.]/g,'-')}.csv`;
-  a.click();
-  registros=[];
-  actualizar();
-}
+window.addEventListener("beforeunload", function (e) {
+  if (typeof registros !== "undefined" && registros.length > 0) {
+    e.preventDefault();
+    e.returnValue = "Tiene registros sin exportar. Exporte antes de salir para no perder información.";
+  }
+});
+
+history.pushState(null, "", location.href);
+
+window.addEventListener("popstate", function () {
+  history.pushState(null, "", location.href);
+  if (typeof registros !== "undefined" && registros.length > 0) {
+    alert("Antes de salir debe exportar los registros para no perder información.");
+  }
+});
+
 </script>
 
 </body>

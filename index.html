@@ -17,10 +17,55 @@
 <title>Inventario Físico 2026</title>
 
 <style>
+
+.switch-box{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  margin-top:6px;
+}
+
+.switch{
+  width:42px;
+  height:22px;
+  background:#cfd4da;
+  border-radius:20px;
+  position:relative;
+  cursor:pointer;
+  transition:background .2s;
+  margin-left:auto;
+}
+
+.switch::after{
+  content:"";
+  width:18px;
+  height:18px;
+  background:white;
+  border-radius:50%;
+  position:absolute;
+  top:2px;
+  left:2px;
+  transition:transform .2s;
+}
+
+.switch.active{
+  background:var(--naranja);
+}
+
+.switch.active::after{
+  transform:translateX(20px);
+}
+
 :root{
-  --azul:#0b3c5d;
+  --azul:#243846;
   --gris:#f4f6f8;
   --naranja:#f28c28;
+  --claro:#E9EDF1;
+}
+
+.btn-cargar{
+  background:#E9EDF1;
+  color:#0b3c5d
 }
 
 *{box-sizing:border-box;font-family:Segoe UI,Tahoma,sans-serif}
@@ -72,7 +117,6 @@ button{background:var(--azul);color:white;border:none;margin-top:15px;cursor:poi
 .option{padding:8px;cursor:pointer;border-bottom:1px solid #eee}
 .option:hover{background:#f1f5f9}
 
-/* ===== ESTILO MIS REGISTROS (COPIADO DEL CÓDIGO QUE TE GUSTABA) ===== */
 .registro{
   padding:10px;
   border-bottom:1px solid #eee;
@@ -95,7 +139,6 @@ button{background:var(--azul);color:white;border:none;margin-top:15px;cursor:poi
   line-height:1;
   padding:0;
 }
-/* ================================================================ */
 
 .footer{
   text-align:center;
@@ -103,7 +146,6 @@ button{background:var(--azul);color:white;border:none;margin-top:15px;cursor:poi
   font-size:14px;
 }
 
-/* ===== SOLO ESTÉTICA REGISTRAR POR UBICACIÓN ===== */
 .cant-uni{
   display:flex;
   align-items:center;
@@ -134,8 +176,8 @@ button{background:var(--azul);color:white;border:none;margin-top:15px;cursor:poi
 </div>
 
 <div class="tabs">
-  <div class="tab active" onclick="mostrarTab('reg',this)">Registrar</div>
-  <div class="tab" onclick="mostrarTab('ubi',this)">Registrar por ubicación</div>
+  <div class="tab active" onclick="mostrarTab('reg',this)">Item</div>
+  <div class="tab" onclick="mostrarTab('ubi',this)">Ubicación</div>
   <div class="tab" onclick="mostrarTab('mis',this)">
     Mis registros (<span id="contador">0</span>)
   </div>
@@ -171,7 +213,7 @@ button{background:var(--azul);color:white;border:none;margin-top:15px;cursor:poi
   <input id="ubicacionMasiva" onkeyup="filtrarUbicaciones()">
   <div id="listaUbicaciones" class="list hidden"></div>
 
-  <button onclick="cargarPorUbicacion()">Cargar items</button>
+  <button id="btnCargar" class="btn-cargar" onclick="cargarPorUbicacion()">Cargar items</button>
   <div id="listaUbicacion" style="margin-top:20px"></div>
   <button onclick="guardarPorUbicacion()">Guardar</button>
 </div>
@@ -186,7 +228,6 @@ button{background:var(--azul);color:white;border:none;margin-top:15px;cursor:poi
 <div class="footer">
   <h2>Inventario Físico 2026</h2>
   © Derechos reservados DAS Logistics Solutions S.A.C<br>
-  Programador: <strong>Anthony Carranza Paredes</strong>
 </div>
 
 <script src="datos_items.js"></script>
@@ -216,13 +257,23 @@ function mostrarTab(tab,el){
 }
 
 function filtrarItems(){
-  const v=codigo.value.toLowerCase();
-  if(v.length<2){listaItems.classList.add("hidden");return;}
-  const f=catalogo.filter(i=>i.codigo.includes(v)).slice(0,10);
-  listaItems.innerHTML=f.map(i=>`
+  const v = codigo.value.toLowerCase();
+  if (v.length < 2) {
+    listaItems.classList.add("hidden");
+    return;
+  }
+
+  const f = catalogo.filter(i =>
+    i.codigo.toLowerCase().includes(v) ||
+    i.descripcion.toLowerCase().includes(v)
+  ).slice(0, 10);
+
+  listaItems.innerHTML = f.map(i => `
     <div class="option" onmousedown="seleccionarItem('${i.codigo}')">
       ${i.codigo} - ${i.descripcion}
-    </div>`).join("");
+    </div>
+  `).join("");
+
   listaItems.classList.remove("hidden");
 }
 
@@ -260,43 +311,77 @@ function filtrarUbicaciones(){
 }
 
 function cargarPorUbicacion(){
-  const ub=ubicacionMasiva.value.trim();
-  if(!ub)return alert("Ingrese ubicación");
 
-  itemsUbicacion=catalogo.filter(i=>i.ubicacion===ub && Number(i.saldo)>0);
+  const hayActivos = document.querySelectorAll(".switch.active").length > 0;
+  if (hayActivos) {
+    alert("Debe guardar los items seleccionados antes de volver a cargar.");
+    return;
+  }
+
+  itemsUbicacion = [];
+  listaUbicacion.innerHTML = "";
+
+  const ub = ubicacionMasiva.value.trim();
+  if(!ub) return alert("Ingrese ubicación");
+
+  itemsUbicacion = catalogo
+  .filter(i => i.ubicacion === ub && Number(i.saldo) > 0)
+  .sort((a, b) => Number(a.codigo) - Number(b.codigo));
 
   listaUbicacion.innerHTML=itemsUbicacion.map((i,idx)=>`
     <div class="registro">
       <div style="width:100%">
         <b>${i.codigo}</b> - ${i.descripcion}
-        <div class="cant-uni">
-          <input type="number" min="0" value="${i.saldo}" id="cantU_${idx}">
-          <span>${i.unidad}</span>
-        </div>
+        <div class="switch-box">
+    <div class="cant-uni">
+      <input type="number" min="0" value="${i.saldo}" id="cantU_${idx}">
+      <span>${i.unidad}</span>
+    </div>
+
+    <div class="switch" id="sw_${idx}"  onclick="this.classList.toggle('active'); controlarBloqueoCargar();"></div>
+    </div>
+
         Observaciones:
         <input id="obsU_${idx}">
       </div>
     </div>`).join("");
+    controlarBloqueoCargar();
 }
 
 function guardarPorUbicacion(){
   itemsUbicacion.forEach((i,idx)=>{
-    const c=Number(document.getElementById(`cantU_${idx}`).value);
-    const o=document.getElementById(`obsU_${idx}`).value;
-    if(c>0){
-      registros.push({
-        codigo:i.codigo,
-        ubicacion:i.ubicacion,
-        cantidad:c,
-        unidad:i.unidad,
-        observaciones:o
-      });
-    }
+    const sw = document.getElementById(`sw_${idx}`);
+    if(!sw.classList.contains("active")) return;
+
+    const c = Number(document.getElementById(`cantU_${idx}`).value);
+    const o = document.getElementById(`obsU_${idx}`).value;
+
+    registros.push({
+      codigo:i.codigo,
+      ubicacion:i.ubicacion,
+      cantidad:c,
+      unidad:i.unidad,
+      observaciones:o
+    });
   });
+
   itemsUbicacion=[];
   ubicacionMasiva.value="";
   listaUbicacion.innerHTML="";
   actualizar();
+  controlarBloqueoCargar();
+}
+
+function controlarBloqueoCargar(){
+  const hayActivos = document.querySelectorAll(".switch.active").length > 0;
+
+  btnCargar.disabled = hayActivos;
+  btnCargar.style.opacity = hayActivos ? "0.6" : "1";
+  btnCargar.style.cursor = hayActivos ? "not-allowed" : "pointer";
+
+  ubicacionMasiva.disabled = hayActivos;
+  ubicacionMasiva.style.opacity = hayActivos ? "0.6" : "1";
+  ubicacionMasiva.style.cursor = hayActivos ? "not-allowed" : "text";
 }
 
 function actualizar(){

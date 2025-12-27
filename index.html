@@ -286,15 +286,58 @@ function seleccionarItem(c){
   listaItems.classList.add("hidden");
 }
 
+function obtenerFechaHora(){
+  const d = new Date();
+  return {
+    fecha: d.toLocaleDateString("es-PE"),
+    hora: d.toLocaleTimeString("es-PE", { hour12: false })
+  };
+}
+
 function guardar(){
+
+  const cod = codigo.value.trim();
+  const ubi = ubicacion.value.trim();
+  const cant = Number(cantidad.value);
+
+  if (!cod) {
+    alert("Debe ingresar el Código del item");
+    codigo.focus();
+    return;
+  }
+
+  if (!ubi) {
+    alert("Debe ingresar la Ubicación");
+    ubicacion.focus();
+    return;
+  }
+
+  if (isNaN(cant) || cant <= 0) {
+    alert("La cantidad debe ser mayor a 0");
+    cantidad.focus();
+    return;
+  }
+
+const item = catalogo.find(i => i.codigo === cod);
+const fh = obtenerFechaHora();
+
   registros.push({
-    codigo:codigo.value,
-    ubicacion:ubicacion.value,
-    cantidad:cantidad.value,
-    unidad:unidad.value,
-    observaciones:obs.value
+    codigo: cod,
+    descripcion: item ? item.descripcion : "",
+    ubicacion: ubi,
+    cantidad: cant,
+    unidad: unidad.value,
+    fecha: fh.fecha,
+    hora: fh.hora,
+    observaciones: obs.value.trim()
   });
-  codigo.value=ubicacion.value=cantidad.value=unidad.value=obs.value="";
+
+  codigo.value = "";
+  ubicacion.value = "";
+  cantidad.value = "";
+  unidad.value = "";
+  obs.value = "";
+
   actualizar();
 }
 
@@ -311,12 +354,6 @@ function filtrarUbicaciones(){
 }
 
 function cargarPorUbicacion(){
-
-  const hayActivos = document.querySelectorAll(".switch.active").length > 0;
-  if (hayActivos) {
-    alert("Debe guardar los items seleccionados antes de volver a cargar.");
-    return;
-  }
 
   itemsUbicacion = [];
   listaUbicacion.innerHTML = "";
@@ -345,31 +382,45 @@ function cargarPorUbicacion(){
         <input id="obsU_${idx}">
       </div>
     </div>`).join("");
-    controlarBloqueoCargar();
 }
 
 function guardarPorUbicacion(){
-  itemsUbicacion.forEach((i,idx)=>{
-    const sw = document.getElementById(`sw_${idx}`);
-    if(!sw.classList.contains("active")) return;
 
-    const c = Number(document.getElementById(`cantU_${idx}`).value);
+  for (let idx = 0; idx < itemsUbicacion.length; idx++) {
+
+    const sw = document.getElementById(`sw_${idx}`);
+    if (!sw.classList.contains("active")) continue;
+
+    const cInput = document.getElementById(`cantU_${idx}`);
+    const c = Number(cInput.value);
+
+    if (isNaN(c) || c <= 0) {
+      alert(`La cantidad debe ser mayor a 0 (Código ${itemsUbicacion[idx].codigo})`);
+      cInput.focus();
+      return;
+    }
+
     const o = document.getElementById(`obsU_${idx}`).value;
+    const fh = obtenerFechaHora();
 
     registros.push({
-      codigo:i.codigo,
-      ubicacion:i.ubicacion,
-      cantidad:c,
-      unidad:i.unidad,
-      observaciones:o
+      codigo: itemsUbicacion[idx].codigo,
+      descripcion: itemsUbicacion[idx].descripcion,
+      ubicacion: itemsUbicacion[idx].ubicacion,
+      cantidad: c,
+      unidad: itemsUbicacion[idx].unidad,
+      fecha: fh.fecha,
+      hora: fh.hora,
+      observaciones: o.trim()
     });
-  });
+  }
 
-  itemsUbicacion=[];
-  ubicacionMasiva.value="";
-  listaUbicacion.innerHTML="";
-  actualizar();
+  itemsUbicacion = [];
+  listaUbicacion.innerHTML = "";
+  ubicacionMasiva.value = "";
+
   controlarBloqueoCargar();
+  actualizar();
 }
 
 function controlarBloqueoCargar(){
@@ -389,7 +440,10 @@ function actualizar(){
   listaRegistros.innerHTML=registros.map((r,i)=>`
     <div class="registro">
       <div>
-        <b>${i+1}. ${r.codigo}</b><br>
+        <b>${i+1}. ${r.codigo}</b> - ${r.descripcion}<br>
+        <span style="color:var(--naranja); font-weight:600">
+          ${r.fecha} ${r.hora}
+        </span><br>
         Ubicación: ${r.ubicacion}<br>
         Cantidad: ${r.cantidad} ${r.unidad}
         ${r.observaciones?`<br><small>Obs: ${r.observaciones}</small>`:""}
@@ -404,9 +458,9 @@ function exportar(){
     return;
   }
 
-  let csv = "DNI,Código,Ubicación,Cantidad,Unidad,Observaciones\n";
+  let csv = "DNI,Código,Descripción,Ubicación,Cantidad,Unidad,Fecha,Hora,Observaciones\n";
   registros.forEach(r => {
-    csv += `${dni},${r.codigo},${r.ubicacion},${r.cantidad},${r.unidad},"${r.observaciones || ""}"\n`;
+  csv += `${dni},${r.codigo},${r.descripcion},${r.ubicacion},${r.cantidad},${r.unidad},${r.fecha},${r.hora},"${r.observaciones || ""}"\n`;
   });
 
   const fecha = new Date().toISOString().replace(/[:.]/g, "-");

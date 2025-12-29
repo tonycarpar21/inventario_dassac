@@ -1,11 +1,12 @@
 <!--
 =====================================================
   SISTEMA DE INVENTARIO FÍSICO 2026
-  © Derechos reservados DAS Logistics Solutions S.A.C
+  © DAS Logistics Solutions S.A.C
+  Autor: Anthony David Carranza Paredes
+
+  Uso exclusivo interno.
   Prohibida su copia, modificación o distribución
   sin autorización expresa del autor.
-
-  Programador: Anthony Carranza Paredes
 =====================================================
 -->
 
@@ -16,145 +17,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Inventario Físico 2026</title>
 
-<style>
+<link rel="stylesheet" href="styles.css">
 
-.switch-box{
-  display:flex;
-  align-items:center;
-  gap:10px;
-  margin-top:6px;
-}
-
-.switch{
-  width:42px;
-  height:22px;
-  background:#cfd4da;
-  border-radius:20px;
-  position:relative;
-  cursor:pointer;
-  transition:background .2s;
-  margin-left:auto;
-}
-
-.switch::after{
-  content:"";
-  width:18px;
-  height:18px;
-  background:white;
-  border-radius:50%;
-  position:absolute;
-  top:2px;
-  left:2px;
-  transition:transform .2s;
-}
-
-.switch.active{
-  background:var(--naranja);
-}
-
-.switch.active::after{
-  transform:translateX(20px);
-}
-
-:root{
-  --azul:#243846;
-  --gris:#f4f6f8;
-  --naranja:#f28c28;
-  --claro:#E9EDF1;
-}
-
-.btn-cargar{
-  background:#E9EDF1;
-  color:#0b3c5d
-}
-
-*{box-sizing:border-box;font-family:Segoe UI,Tahoma,sans-serif}
-
-body{margin:0;padding:20px;background:var(--gris)}
-
-.header{text-align:center;margin-bottom:20px}
-.header img{height:80px}
-
-.dni-box{
-  background:white;
-  padding:15px;
-  border-radius:12px;
-  max-width:400px;
-  margin:0 auto 20px auto;
-}
-
-.tabs{display:flex;background:white;border-radius:12px;overflow:hidden;margin-bottom:15px}
-.tab{flex:1;padding:12px;text-align:center;cursor:pointer;background:#e9edf1}
-.tab.active{background:white;border-bottom:3px solid var(--naranja)}
-
-.card{background:white;padding:20px;border-radius:15px}
-.hidden{display:none}
-
-label{font-weight:600;margin-top:12px;display:block}
-.req{color:#888}
-
-input,button{
-  width:100%;
-  padding:12px;
-  margin-top:6px;
-  font-size:15px;
-  border-radius:8px;
-  border:1px solid #ccc;
-}
-
-button{background:var(--azul);color:white;border:none;margin-top:15px;cursor:pointer}
-
-.flex{display:flex;gap:12px}
-.flex>div{flex:1}
-
-.list{
-  border:1px solid #ddd;
-  max-height:220px;
-  overflow-y:auto;
-  border-radius:8px;
-}
-
-.option{padding:8px;cursor:pointer;border-bottom:1px solid #eee}
-.option:hover{background:#f1f5f9}
-
-.registro{
-  padding:10px;
-  border-bottom:1px solid #eee;
-  display:flex;
-  justify-content:space-between;
-  gap:10px;
-}
-
-.btn-del{
-  width:32px;
-  height:32px;
-  background:#e5e7eb;
-  border:none;
-  border-radius:6px;
-  cursor:pointer;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-size:16px;
-  line-height:1;
-  padding:0;
-}
-
-.footer{
-  text-align:center;
-  margin-top:60px;
-  font-size:14px;
-}
-
-.cant-uni{
-  display:flex;
-  align-items:center;
-  gap:10px;
-  margin-top:6px;
-}
-.cant-uni input{width:90px}
-.cant-uni span{font-weight:600}
-</style>
 </head>
 
 <body>
@@ -171,15 +35,20 @@ button{background:var(--azul);color:white;border:none;margin-top:15px;cursor:poi
 
 <div id="app" class="hidden">
 
-<div class="dni-box">
-  DNI: <b id="dniFijo"></b>
+<div class="dni-box" style="display:flex; justify-content:space-between; align-items:center;">
+  <div>
+    DNI: <b id="dniFijo"></b>
+  </div>
+  <div style="font-weight:600;">
+    Total items: <span id="totalItems">0</span>
+  </div>
 </div>
 
 <div class="tabs">
   <div class="tab active" onclick="mostrarTab('reg',this)">Item</div>
   <div class="tab" onclick="mostrarTab('ubi',this)">Ubicación</div>
   <div class="tab" onclick="mostrarTab('mis',this)">
-    Mis registros (<span id="contador">0</span>)
+    Registros (<span id="contador">0</span>)
   </div>
 </div>
 
@@ -231,281 +100,7 @@ button{background:var(--azul);color:white;border:none;margin-top:15px;cursor:poi
 </div>
 
 <script src="datos_items.js"></script>
-
-<script>
-let catalogo=[],registros=[],dni="";
-let itemsUbicacion=[],ubicaciones=[];
-
-document.addEventListener("DOMContentLoaded",()=>{
-  catalogo=Object.entries(window.catalogoCompleto).map(([c,d])=>({...d,codigo:c}));
-  ubicaciones=[...new Set(catalogo.map(i=>i.ubicacion).filter(u=>u))];
-});
-
-function confirmarDNI(){
-  dni=dniInput.value.trim();
-  if(!dni)return alert("Ingrese DNI");
-  dniFijo.innerText=dni;
-  dniBox.classList.add("hidden");
-  app.classList.remove("hidden");
-}
-
-function mostrarTab(tab,el){
-  document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"));
-  el.classList.add("active");
-  document.querySelectorAll("[id^='tab-']").forEach(d=>d.classList.add("hidden"));
-  document.getElementById("tab-"+tab).classList.remove("hidden");
-}
-
-function filtrarItems(){
-  const v = codigo.value.toLowerCase();
-  if (v.length < 2) {
-    listaItems.classList.add("hidden");
-    return;
-  }
-
-  const f = catalogo.filter(i =>
-    i.codigo.toLowerCase().includes(v) ||
-    i.descripcion.toLowerCase().includes(v)
-  ).slice(0, 10);
-
-  listaItems.innerHTML = f.map(i => `
-    <div class="option" onmousedown="seleccionarItem('${i.codigo}')">
-      ${i.codigo} - ${i.descripcion}
-    </div>
-  `).join("");
-
-  listaItems.classList.remove("hidden");
-}
-
-function seleccionarItem(c){
-  const i=catalogo.find(x=>x.codigo===c);
-  codigo.value=i.codigo;
-  ubicacion.value=i.ubicacion||"";
-  cantidad.value=i.saldo??"";
-  unidad.value=i.unidad||"";
-  listaItems.classList.add("hidden");
-}
-
-function obtenerFechaHora(){
-  const d = new Date();
-  return {
-    fecha: d.toLocaleDateString("es-PE"),
-    hora: d.toLocaleTimeString("es-PE", { hour12: false })
-  };
-}
-
-function guardar(){
-
-  const cod = codigo.value.trim();
-  const ubi = ubicacion.value.trim();
-  const cant = Number(cantidad.value);
-
-  if (!cod) {
-    alert("Debe ingresar el Código del item");
-    codigo.focus();
-    return;
-  }
-
-  if (!ubi) {
-    alert("Debe ingresar la Ubicación");
-    ubicacion.focus();
-    return;
-  }
-
-  if (isNaN(cant) || cant <= 0) {
-    alert("La cantidad debe ser mayor a 0");
-    cantidad.focus();
-    return;
-  }
-
-const item = catalogo.find(i => i.codigo === cod);
-const fh = obtenerFechaHora();
-
-  registros.push({
-    codigo: cod,
-    descripcion: item ? item.descripcion : "",
-    ubicacion: ubi,
-    cantidad: cant,
-    unidad: unidad.value,
-    fecha: fh.fecha,
-    hora: fh.hora,
-    observaciones: obs.value.trim()
-  });
-
-  codigo.value = "";
-  ubicacion.value = "";
-  cantidad.value = "";
-  unidad.value = "";
-  obs.value = "";
-
-  actualizar();
-}
-
-function filtrarUbicaciones(){
-  const v=ubicacionMasiva.value.toLowerCase();
-  if(!v){listaUbicaciones.classList.add("hidden");return;}
-  const f=ubicaciones.filter(u=>u.toLowerCase().includes(v)).slice(0,10);
-  listaUbicaciones.innerHTML=f.map(u=>`
-    <div class="option" onmousedown="
-      ubicacionMasiva.value='${u}';
-      listaUbicaciones.classList.add('hidden');
-    ">${u}</div>`).join("");
-  listaUbicaciones.classList.remove("hidden");
-}
-
-function cargarPorUbicacion(){
-
-  itemsUbicacion = [];
-  listaUbicacion.innerHTML = "";
-
-  const ub = ubicacionMasiva.value.trim();
-  if(!ub) return alert("Ingrese ubicación");
-
-  itemsUbicacion = catalogo
-  .filter(i => i.ubicacion === ub && Number(i.saldo) > 0)
-  .sort((a, b) => Number(a.codigo) - Number(b.codigo));
-
-  listaUbicacion.innerHTML=itemsUbicacion.map((i,idx)=>`
-    <div class="registro">
-      <div style="width:100%">
-        <b>${i.codigo}</b> - ${i.descripcion}
-        <div class="switch-box">
-    <div class="cant-uni">
-      <input type="number" min="0" value="${i.saldo}" id="cantU_${idx}">
-      <span>${i.unidad}</span>
-    </div>
-
-    <div class="switch" id="sw_${idx}"  onclick="this.classList.toggle('active'); controlarBloqueoCargar();"></div>
-    </div>
-
-        Observaciones:
-        <input id="obsU_${idx}">
-      </div>
-    </div>`).join("");
-}
-
-function guardarPorUbicacion(){
-
-  for (let idx = 0; idx < itemsUbicacion.length; idx++) {
-
-    const sw = document.getElementById(`sw_${idx}`);
-    if (!sw.classList.contains("active")) continue;
-
-    const cInput = document.getElementById(`cantU_${idx}`);
-    const c = Number(cInput.value);
-
-    if (isNaN(c) || c <= 0) {
-      alert(`La cantidad debe ser mayor a 0 (Código ${itemsUbicacion[idx].codigo})`);
-      cInput.focus();
-      return;
-    }
-
-    const o = document.getElementById(`obsU_${idx}`).value;
-    const fh = obtenerFechaHora();
-
-    registros.push({
-      codigo: itemsUbicacion[idx].codigo,
-      descripcion: itemsUbicacion[idx].descripcion,
-      ubicacion: itemsUbicacion[idx].ubicacion,
-      cantidad: c,
-      unidad: itemsUbicacion[idx].unidad,
-      fecha: fh.fecha,
-      hora: fh.hora,
-      observaciones: o.trim()
-    });
-  }
-
-  itemsUbicacion = [];
-  listaUbicacion.innerHTML = "";
-  ubicacionMasiva.value = "";
-
-  controlarBloqueoCargar();
-  actualizar();
-}
-
-function controlarBloqueoCargar(){
-  const hayActivos = document.querySelectorAll(".switch.active").length > 0;
-
-  btnCargar.disabled = hayActivos;
-  btnCargar.style.opacity = hayActivos ? "0.6" : "1";
-  btnCargar.style.cursor = hayActivos ? "not-allowed" : "pointer";
-
-  ubicacionMasiva.disabled = hayActivos;
-  ubicacionMasiva.style.opacity = hayActivos ? "0.6" : "1";
-  ubicacionMasiva.style.cursor = hayActivos ? "not-allowed" : "text";
-}
-
-function actualizar(){
-  contador.innerText=registros.length;
-  listaRegistros.innerHTML=registros.map((r,i)=>`
-    <div class="registro">
-      <div>
-        <b>${i+1}. ${r.codigo}</b> - ${r.descripcion}<br>
-        <span style="color:var(--naranja); font-weight:600">
-          ${r.fecha} ${r.hora}
-        </span><br>
-        Ubicación: ${r.ubicacion}<br>
-        Cantidad: ${r.cantidad} ${r.unidad}
-        ${r.observaciones?`<br><small>Obs: ${r.observaciones}</small>`:""}
-      </div>
-    <button class="btn-del" onclick="borrarRegistro(${i})">🗑️</button>
-    </div>`).join("");
-}
-
-function exportar(){
-  if (!registros.length) {
-    alert("No hay registros para exportar.");
-    return;
-  }
-
-  let csv = "DNI,Código,Descripción,Ubicación,Cantidad,Unidad,Fecha,Hora,Observaciones\n";
-  registros.forEach(r => {
-  csv += `${dni},${r.codigo},${r.descripcion},${r.ubicacion},${r.cantidad},${r.unidad},${r.fecha},${r.hora},"${r.observaciones || ""}"\n`;
-  });
-
-  const fecha = new Date().toISOString().replace(/[:.]/g, "-");
-  const nombreArchivo = `inventario_${dni}_${fecha}.csv`;
-
-  const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
-  const url = URL.createObjectURL(blob);
-
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = nombreArchivo;
-  document.body.appendChild(a);
-  a.click();
-
-  document.body.removeChild(a);
-  URL.revokeObjectURL(url);
-
-  registros = [];
-  actualizar();
-}
-
-function borrarRegistro(i){
-  if(confirm("¿Está seguro de eliminar este registro?")){
-    registros.splice(i,1);
-    actualizar();
-  }
-}
-
-window.addEventListener("beforeunload", function (e) {
-  if (typeof registros !== "undefined" && registros.length > 0) {
-    e.preventDefault();
-    e.returnValue = "Tiene registros sin exportar. Exporte antes de salir para no perder información.";
-  }
-});
-
-history.pushState(null, "", location.href);
-
-window.addEventListener("popstate", function () {
-  history.pushState(null, "", location.href);
-  if (typeof registros !== "undefined" && registros.length > 0) {
-    alert("Antes de salir debe exportar los registros para no perder información.");
-  }
-});
-
-</script>
+<script src="app.min.js"></script>
 
 </body>
 </html>

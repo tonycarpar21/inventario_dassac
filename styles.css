@@ -1,0 +1,148 @@
+/*
+=====================================================
+  SISTEMA DE INVENTARIO FÍSICO 2026
+  © DAS Logistics Solutions S.A.C
+  Autor: Anthony David Carranza Paredes
+
+  Uso exclusivo interno.
+  Prohibida su copia, modificación o distribución
+  sin autorización expresa del autor.
+=====================================================
+*/
+
+.switch-box{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  margin-top:6px;
+}
+
+.switch{
+  width:42px;
+  height:22px;
+  background:#cfd4da;
+  border-radius:20px;
+  position:relative;
+  cursor:pointer;
+  transition:background .2s;
+  margin-left:auto;
+}
+
+.switch::after{
+  content:"";
+  width:18px;
+  height:18px;
+  background:white;
+  border-radius:50%;
+  position:absolute;
+  top:2px;
+  left:2px;
+  transition:transform .2s;
+}
+
+.switch.active{
+  background:var(--naranja);
+}
+
+.switch.active::after{
+  transform:translateX(20px);
+}
+
+:root{
+  --azul:#243846;
+  --gris:#f4f6f8;
+  --naranja:#f28c28;
+  --claro:#E9EDF1;
+}
+
+.btn-cargar{
+  background:#E9EDF1;
+  color:#0b3c5d
+}
+
+*{box-sizing:border-box;font-family:Segoe UI,Tahoma,sans-serif}
+
+body{margin:0;padding:20px;background:var(--gris)}
+
+.header{text-align:center;margin-bottom:20px}
+.header img{height:80px}
+
+.dni-box{
+  background:white;
+  padding:15px;
+  border-radius:12px;
+  max-width:400px;
+  margin:0 auto 20px auto;
+}
+
+.tabs{display:flex;background:white;border-radius:12px;overflow:hidden;margin-bottom:15px}
+.tab{flex:1;padding:12px;text-align:center;cursor:pointer;background:#e9edf1}
+.tab.active{background:white;border-bottom:3px solid var(--naranja)}
+
+.card{background:white;padding:20px;border-radius:15px}
+.hidden{display:none}
+
+label{font-weight:600;margin-top:12px;display:block}
+.req{color:#888}
+
+input,button{
+  width:100%;
+  padding:12px;
+  margin-top:6px;
+  font-size:15px;
+  border-radius:8px;
+  border:1px solid #ccc;
+}
+
+button{background:var(--azul);color:white;border:none;margin-top:15px;cursor:pointer}
+
+.flex{display:flex;gap:12px}
+.flex>div{flex:1}
+
+.list{
+  border:1px solid #ddd;
+  max-height:220px;
+  overflow-y:auto;
+  border-radius:8px;
+}
+
+.option{padding:8px;cursor:pointer;border-bottom:1px solid #eee}
+.option:hover{background:#f1f5f9}
+
+.registro{
+  padding:10px;
+  border-bottom:1px solid #eee;
+  display:flex;
+  justify-content:space-between;
+  gap:10px;
+}
+
+.btn-del{
+  width:32px;
+  height:32px;
+  background:#e5e7eb;
+  border:none;
+  border-radius:6px;
+  cursor:pointer;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:16px;
+  line-height:1;
+  padding:0;
+}
+
+.footer{
+  text-align:center;
+  margin-top:60px;
+  font-size:14px;
+}
+
+.cant-uni{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  margin-top:6px;
+}
+.cant-uni input{width:90px}
+.cant-uni span{font-weight:600}

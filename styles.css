@@ -55,6 +55,11 @@
   --claro:#E9EDF1;
 }
 
+.btn-press{
+  background:#1b2e4a !important;
+  transform:scale(0.97);
+}
+
 .btn-cargar{
   background:#E9EDF1;
   color:#0b3c5d
@@ -92,6 +97,7 @@ input,button{
   font-size:15px;
   border-radius:8px;
   border:1px solid #ccc;
+  font-size:16px;
 }
 
 button{background:var(--azul);color:white;border:none;margin-top:15px;cursor:pointer}
@@ -104,6 +110,7 @@ button{background:var(--azul);color:white;border:none;margin-top:15px;cursor:poi
   max-height:220px;
   overflow-y:auto;
   border-radius:8px;
+  -webkit-overflow-scrolling: touch;
 }
 
 .option{padding:8px;cursor:pointer;border-bottom:1px solid #eee}
@@ -154,9 +161,34 @@ button{background:var(--azul);color:white;border:none;margin-top:15px;cursor:poi
 
 button{
   transition: background .08s ease, transform .08s ease;
+  -webkit-tap-highlight-color: transparent;
+  min-height:48px;
 }
 
 button:active{
   background:#1b2e4a;
   transform:scale(0.97);
+}
+
+.alert-dup{
+  position:fixed;
+  bottom:20px;
+  left:50%;
+  transform:translateX(-50%);
+  background:#dc2626;
+  color:white;
+  padding:14px 20px;
+  border-radius:12px;
+  font-weight:700;
+  font-size:14px;
+  box-shadow:0 6px 20px rgba(0,0,0,.25);
+  z-index:9999;
+  opacity:0;
+  pointer-events:none;
+  transition:opacity .25s ease, transform .25s ease;
+}
+
+.alert-dup.show{
+  opacity:1;
+  transform:translateX(-50%) translateY(-6px);
 }

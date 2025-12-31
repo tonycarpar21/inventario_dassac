@@ -30,7 +30,7 @@
 <div class="dni-box" id="dniBox">
   <label>DNI <span class="req">*</span></label>
   <input id="dniInput">
-  <button onclick="confirmarDNI()">Ingresar</button>
+  <button id="btnIngresar" onclick="confirmarDNI()">Ingresar</button>
 </div>
 
 <div id="app" class="hidden">
@@ -99,8 +99,12 @@
   © Derechos reservados DAS Logistics Solutions S.A.C<br>
 </div>
 
+<div id="alertDup" class="alert-dup">
+  ⚠️ Duplicado detectado
+</div>
+
 <script src="datos_items.js"></script>
-<script src="app.min.js"></script>
+<script src="app.js"></script>
 
 </body>
 </html>

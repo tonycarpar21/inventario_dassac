@@ -28,6 +28,39 @@
   margin-left:auto;
 }
 
+.btn-mic{
+  width:44px;
+  height:44px;
+  min-height:44px;
+  border-radius:50%;
+  background:var(--naranja);
+  color:white;
+  border:none;
+  font-size:20px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  cursor:pointer;
+  box-shadow:0 4px 10px rgba(189, 145, 24, 0.25);
+  transition:background .2s, transform .1s, box-shadow .2s;
+}
+
+.btn-mic:active{
+  transform:scale(0.9);
+}
+
+.btn-mic.listening{
+  background:#ff6a00;
+  box-shadow:0 0 0 6px rgba(242,140,40,.35);
+  animation:pulse 1.2s infinite;
+}
+
+@keyframes pulse{
+  0%{box-shadow:0 0 0 0 rgba(242,140,40,.5)}
+  70%{box-shadow:0 0 0 10px rgba(242,140,40,0)}
+  100%{box-shadow:0 0 0 0 rgba(242,140,40,0)}
+}
+
 .switch::after{
   content:"";
   width:18px;

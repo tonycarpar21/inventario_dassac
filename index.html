@@ -54,7 +54,20 @@
 
 <div id="tab-reg" class="card">
   <label>Código del item <span class="req">*</span></label>
-  <input id="codigo" onkeyup="filtrarItems()">
+
+  <div style="display:flex; gap:8px; align-items:center;">
+    <input id="codigo" onkeyup="filtrarItems()" style="flex:1">
+    <button
+      type="button"
+      id="btnVozCodigo"
+      class="btn-mic"
+      onclick="dictarCodigo()"
+      >
+      🎤
+     </button>
+
+  </div>
+
   <div id="listaItems" class="list hidden"></div>
 
   <label>Ubicación <span class="req">*</span></label>
@@ -78,8 +91,24 @@
 </div>
 
 <div id="tab-ubi" class="card hidden">
-  <label>Ubicación <span class="req">*</span></label>
-  <input id="ubicacionMasiva" onkeyup="filtrarUbicaciones()">
+<label>Ubicación <span class="req">*</span></label>
+
+<div style="display:flex; gap:8px; align-items:center;">
+  <input
+    id="ubicacionMasiva"
+    onkeyup="filtrarUbicaciones()"
+    style="flex:1"
+  >
+
+  <button
+    type="button"
+    id="btnVozUbicacion"
+    class="btn-mic"
+    onclick="dictarUbicacion()"
+  >
+    🎤
+  </button>
+</div>
   <div id="listaUbicaciones" class="list hidden"></div>
 
   <button id="btnCargar" class="btn-cargar" onclick="cargarPorUbicacion()">Cargar items</button>
@@ -108,4 +137,3 @@
 
 </body>
 </html>
-
